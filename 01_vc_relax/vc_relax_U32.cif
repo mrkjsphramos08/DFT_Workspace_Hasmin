@@ -1,0 +1,37 @@
+data_image0
+_chemical_formula_structural       Li3Co3O6
+_chemical_formula_sum              "Li3 Co3 O6"
+_cell_length_a       2.821169507731492
+_cell_length_b       2.821169507731492
+_cell_length_c       14.026666371
+_cell_angle_alpha    90.0
+_cell_angle_beta     90.0
+_cell_angle_gamma    119.9999999937032
+
+_space_group_name_H-M_alt    "P 1"
+_space_group_IT_number       1
+
+loop_
+  _space_group_symop_operation_xyz
+  'x, y, z'
+
+loop_
+  _atom_site_type_symbol
+  _atom_site_label
+  _atom_site_symmetry_multiplicity
+  _atom_site_fract_x
+  _atom_site_fract_y
+  _atom_site_fract_z
+  _atom_site_occupancy
+  Li  Li1       1.0  0.0  0.0  0.0  1.0000
+  Li  Li2       1.0  0.6666666666999999  0.3333333332999999  0.3333334680000001  1.0000
+  Li  Li3       1.0  0.3333333333  0.6666666667  0.666666532  1.0000
+  Co  Co1       1.0  0.3333333333  0.6666666667  0.16666666789999998  1.0000
+  Co  Co2       1.0  0.0  0.0  0.5  1.0000
+  Co  Co3       1.0  0.6666666666999999  0.3333333332999999  0.8333333321  1.0000
+  O   O1        1.0  0.0  0.0  0.2403413059  1.0000
+  O   O2        1.0  0.6666666666999999  0.3333333332999999  0.0929931182  1.0000
+  O   O3        1.0  0.6666666666999999  0.3333333332999999  0.5736743203  1.0000
+  O   O4        1.0  0.3333333333  0.6666666667  0.4263256797  1.0000
+  O   O5        1.0  0.3333333333  0.6666666667  0.9070068818  1.0000
+  O   O6        1.0  0.0  0.0  0.7596586941  1.0000

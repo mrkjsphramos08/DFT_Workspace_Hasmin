@@ -1,0 +1,44 @@
+&CONTROL
+   calculation  = 'relax'
+   pseudo_dir = '/home/mark/pseudo_library/',
+   outdir = './tmp/',
+   forc_conv_thr = 4D-4,
+   nstep = 100
+   prefix = 'pt4-rhombus'
+/
+&SYSTEM
+   ibrav = 0,
+   nat = 4,
+   ntyp = 1,
+   ecutwfc = 40.4
+   ecutrho = 500
+   smearing = 'gaussian',
+   occupations = 'smearing',
+   degauss = 0.01D0,
+   vdw_corr= 'grimme-d3',
+   nspin = 2,
+   starting_magnetization(1) = 0.1,
+/
+&ELECTRONS
+    mixing_beta = 0.5
+    electron_maxstep = 500,
+    mixing_mode = 'local-TF',
+/
+&IONS
+   ion_dynamics = 'bfgs'
+/
+ATOMIC_SPECIES
+   Pt  195.084  pt_pbe_v1.4.uspp.F.UPF
+   
+K_POINTS gamma
+
+CELL_PARAMETERS angstrom
+15.00000000000000 0.00000000000000 0.00000000000000
+0.00000000000000 15.00000000000000 0.00000000000000
+0.00000000000000 0.00000000000000 15.00000000000000
+
+ATOMIC_POSITIONS angstrom
+Pt    6.8738480419    8.5845758255    7.5000000000
+Pt    9.3803155736    8.5855619250    7.5000000000
+Pt    5.6196844264    6.4144380750    7.5000000000
+Pt    8.1261519581    6.4154241745    7.5000000000

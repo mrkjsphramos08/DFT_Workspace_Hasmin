@@ -1,0 +1,44 @@
+&CONTROL
+   calculation  = 'relax'
+   pseudo_dir = '/home/mark/pseudo_library/',
+   outdir = './tmp/',
+   forc_conv_thr = 4D-4,
+   nstep = 200
+   prefix = 'Cu4-rhombus'
+/
+&SYSTEM
+   ibrav = 0,
+   nat = 4,
+   ntyp = 1,
+   ecutwfc = 40.4
+   ecutrho = 500
+   smearing = 'gaussian',
+   occupations = 'smearing',
+   degauss = 0.01D0,
+   vdw_corr= 'grimme-d3',
+   nspin = 2,
+   starting_magnetization(1) = 0.1,
+/
+&ELECTRONS
+    mixing_beta = 0.5
+    electron_maxstep = 500,
+    mixing_mode = 'local-TF',
+/
+&IONS
+   ion_dynamics = 'bfgs'
+/
+ATOMIC_SPECIES
+   Cu  63.5460 cu_pbe_v1.2.uspp.F.UPF
+   
+K_POINTS gamma
+
+CELL_PARAMETERS angstrom
+15.00000000000000 0.00000000000000 0.00000000000000
+0.00000000000000 15.00000000000000 0.00000000000000
+0.00000000000000 0.00000000000000 15.00000000000000
+
+ATOMIC_POSITIONS angstrom
+Cu    6.3670463899    7.5000000000    7.5000000000
+Cu    8.6329536101    7.5000000000    7.5000000000
+Cu    7.5000000000    9.5820541778    7.5000000000
+Cu    7.5000000000    5.4179458222    7.5000000000

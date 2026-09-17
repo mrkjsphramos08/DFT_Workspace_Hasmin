@@ -1,0 +1,9 @@
+Cluster,Geometry,CIF Path,Num Atoms,Min Bond Length (A),Max Bond Length (A),Avg Edge Bond (A),Overall Avg Distance (A),Bond M1-M2 (A),Bond M1-M3 (A),Bond M1-M4 (A),Bond M2-M3 (A),Bond M2-M4 (A),Bond M3-M4 (A),Short Diagonal (A),Long Diagonal (A)
+Co4,Rhombus,/home/mark/LCO/01_bulk/05_metals/Co4/Rhom/Co4_Rhom_latest.cif,4,2.1434,3.3776,2.1434,2.4318,2.6396,2.1434,2.1434,2.1434,2.1434,3.3776,2.6396,3.3776
+Co4,Tetrahedron,/home/mark/LCO/01_bulk/05_metals/Co4/Tetra/Co4_Tetra_latest.cif,4,2.2539,2.2557,2.2548,2.2548,2.2545,2.2557,2.2539,2.2557,2.2539,2.2552,N/A,N/A
+Cu4,Rhombus,/home/mark/LCO/01_bulk/05_metals/Cu4/Rhom/Cu4_Rhom_latest.cif,4,2.2667,4.1629,2.3442,2.6516,2.2667,2.37,2.37,2.37,2.37,4.1629,2.37,4.1629
+Cu4,Tetrahedron,/home/mark/LCO/01_bulk/05_metals/Cu4/Tetra/Cu4_Tetra_latest.cif,4,2.3881,2.3884,2.3882,2.3882,2.3881,2.3881,2.3883,2.3881,2.3883,2.3884,N/A,N/A
+Ni4,Rhombus,/home/mark/LCO/01_bulk/05_metals/Ni4/Rhom/Ni4_Rhom_latest.cif,4,2.2006,3.917,2.235,2.5172,2.2006,2.2464,2.2464,2.2464,2.2464,3.917,2.2464,3.917
+Ni4,Tetrahedron,/home/mark/LCO/01_bulk/05_metals/Ni4/Tetra/Ni4_Tetra_latest.cif,4,2.2734,2.2745,2.2738,2.2738,2.2738,2.2734,2.2739,2.2734,2.2739,2.2745,N/A,N/A
+Pt4,Rhombus,/home/mark/LCO/01_bulk/05_metals/Pt4/Rhom/Pt4_Rhom_latest.cif,4,2.5047,4.3424,2.506,2.8122,2.5065,2.5065,2.5047,4.3424,2.5065,2.5065,2.5065,4.3424
+Pt4,Tetrahedron,/home/mark/LCO/01_bulk/05_metals/Pt4/Tetra/Pt4_Tetra_latest.cif,4,2.5835,2.5836,2.5835,2.5835,2.5836,2.5835,2.5835,2.5835,2.5835,2.5835,N/A,N/A

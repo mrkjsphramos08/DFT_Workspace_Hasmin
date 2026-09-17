@@ -1,0 +1,44 @@
+&CONTROL
+   calculation  = 'relax'
+   pseudo_dir = '/home/mark/pseudo_library/',
+   outdir = './tmp/',
+   forc_conv_thr = 4D-4,
+   nstep = 100
+   prefix = 'Cu4-tetra'
+/
+&SYSTEM
+   ibrav = 0,
+   nat = 4,
+   ntyp = 1,
+   ecutwfc = 40.4
+   ecutrho = 500
+   smearing = 'gaussian',
+   occupations = 'smearing',
+   degauss = 0.01D0,
+   vdw_corr= 'grimme-d3',
+   nspin = 2,
+   starting_magnetization(1) = 0.1,
+/
+&ELECTRONS
+    mixing_beta = 0.5
+    electron_maxstep = 500,
+    mixing_mode = 'local-TF',
+/
+&IONS
+   ion_dynamics = 'bfgs'
+/
+ATOMIC_SPECIES
+   Cu  63.5460 cu_pbe_v1.2.uspp.F.UPF
+   
+K_POINTS gamma
+
+CELL_PARAMETERS angstrom
+15.00000000000000 0.00000000000000 0.00000000000000
+0.00000000000000 15.00000000000000 0.00000000000000
+0.00000000000000 0.00000000000000 15.00000000000000
+
+ATOMIC_POSITIONS angstrom
+Cu    6.3065357966    6.4427057004    6.4923761897
+Cu    8.6934642034    6.4427057004    6.4923761897
+Cu    7.5000000000    8.5106113008    6.4919476953
+Cu    7.5000000000    7.1317341119    8.4412336438

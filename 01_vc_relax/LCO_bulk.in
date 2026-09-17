@@ -1,0 +1,61 @@
+&CONTROL
+   calculation = 'vc-relax'
+   pseudo_dir  = '/home/mark/pseudo_library/'
+   outdir      = './tmp'
+   prefix      = 'lcobulk'
+   forc_conv_thr = 4D-4
+   nstep       = 100
+/
+&SYSTEM
+   ibrav = 0
+   nat   = 12
+   ntyp  = 3
+   ecutwfc = 40.4
+   ecutrho = 500.0
+   occupations = 'smearing'
+   smearing    = 'gaussian'
+   degauss     = 0.01D0
+   vdw_corr    = 'grimme-d3'
+   nspin       = 2
+   starting_magnetization(2) = 0.1
+/
+&ELECTRONS
+   mixing_beta = 0.2
+   electron_maxstep = 500
+   mixing_mode = 'local-TF'
+/
+&IONS
+   ion_dynamics = 'bfgs'
+/
+&CELL
+   cell_dynamics = 'bfgs'
+/
+ATOMIC_SPECIES
+Li  6.941   li_pbe_v1.4.uspp.F.UPF
+Co 58.933   co_pbe_v1.2.uspp.F.UPF
+O  15.999   o_pbe_v1.2.uspp.F.UPF
+
+CELL_PARAMETERS (angstrom)
+   1.410584754  -2.443204462   0.000000000
+   1.410584754   2.443204462   0.000000000
+  -0.000000000  -0.000000000  14.026666371
+
+ATOMIC_POSITIONS (crystal)
+Li   -0.0000000000   -0.0000000000    0.0000000000
+Li    0.6666666667    0.3333333333    0.3333334680
+Li    0.3333333333    0.6666666667    0.6666665320
+Co    0.3333333333    0.6666666667    0.1666666679
+Co    1.0000000000    1.0000000000    0.5000000000
+Co    0.6666666667    0.3333333333    0.8333333321
+O     0.0000000000    0.0000000000    0.2403413059
+O     0.6666666667    0.3333333333    0.0929931182
+O     0.6666666667    0.3333333333    0.5736743203
+O     0.3333333333    0.6666666667    0.4263256797
+O     0.3333333333    0.6666666667    0.9070068818
+O    -0.0000000000   -0.0000000000    0.7596586941
+
+K_POINTS (automatic)
+12 12 4 0 0 0
+
+HUBBARD (ortho-atomic)
+U Co-3d 3.2

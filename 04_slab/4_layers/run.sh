@@ -1,0 +1,16 @@
+#!/bin/bash
+#SBATCH --job-name='3x2_4_layers'
+#SBATCH --partition=high
+#SBATCH --ntasks=32
+#SBATCH --mail-type=ALL
+#SBATCH --requeue
+
+echo "SLURM_JOBID="$SLURM_JOBID
+echo "SLURM_JOB_NODELIST"=$SLURM_JOB_NODELIST
+echo "SLURM_NNODES"=$SLURM_NNODES
+echo "SLURMTMPDIR="$SLURMTMPDIR
+echo "working directory = "$SLURM_SUBMIT_DIR
+
+module load qe/7.2
+
+mpiexec -np 32 pw.x -i 3x2_4_layers.in > 3x2_4_layers.out

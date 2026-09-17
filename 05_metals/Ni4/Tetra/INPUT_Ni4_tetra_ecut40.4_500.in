@@ -1,0 +1,44 @@
+&CONTROL
+   calculation  = 'relax'
+   pseudo_dir = '/home/mark/pseudo_library/',
+   outdir = './tmp/',
+   forc_conv_thr = 4D-4,
+   nstep = 100
+   prefix = 'Ni4-tetra'
+/
+&SYSTEM
+   ibrav = 0,
+   nat = 4,
+   ntyp = 1,
+   ecutwfc = 40.4
+   ecutrho = 500
+   smearing = 'gaussian',
+   occupations = 'smearing',
+   degauss = 0.01D0,
+   vdw_corr= 'grimme-d3',
+   nspin = 2,
+   starting_magnetization(1) = 0.6,
+/
+&ELECTRONS
+    mixing_beta = 0.5
+    electron_maxstep = 500,
+    mixing_mode = 'local-TF',
+/
+&IONS
+   ion_dynamics = 'bfgs'
+/
+ATOMIC_SPECIES
+   Ni  58.6934 ni_pbe_v1.4.uspp.F.UPF
+   
+K_POINTS gamma
+
+CELL_PARAMETERS angstrom
+15.00000000000000 0.00000000000000 0.00000000000000
+0.00000000000000 15.00000000000000 0.00000000000000
+0.00000000000000 0.00000000000000 15.00000000000000
+
+ATOMIC_POSITIONS angstrom
+Ni    6.3630996977    6.4844641837    6.5276061513
+Ni    8.6369003023    6.4844641837    6.5276061513
+Ni    7.5000000000    8.4531811582    6.5271895449
+Ni    7.5000000000    7.1402883042    8.3845216659
