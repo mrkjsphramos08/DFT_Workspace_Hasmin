@@ -1,7 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name='Pt4_Tetra_adsorbed_li'
 #SBATCH --partition=high
-#SBATCH --ntasks=8
+#SBATCH --ntasks=16
+#SBATCH --nodes=1
 #SBATCH --mail-type=ALL
 #SBATCH --requeue
 
@@ -13,4 +14,4 @@ echo "working directory = "$SLURM_SUBMIT_DIR
 
 module load qe/7.2
 
-mpiexec -np 8 pw.x -i INPUT_adsorbed_Pt4_Tetra_latest_li.in > OUTPUT_adsorbed_Pt4_Tetra_latest_li.out
+mpiexec -np 16 pw.x -nk 4 -i INPUT_adsorbed_Pt4_Tetra_latest_li.in > OUTPUT_adsorbed_Pt4_Tetra_latest_li.out

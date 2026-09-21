@@ -11,7 +11,7 @@
    nat = 76,
    ntyp = 4
   starting_magnetization(2) = 0.1
-  starting_magnetization(4) = 0.1,
+  starting_magnetization(4) = 0.5,
    ecutwfc = 40.4
    ecutrho = 500
    smearing = 'gaussian',
@@ -21,8 +21,8 @@
    nspin = 2,
 /
 &ELECTRONS
-    mixing_beta = 0.5
-    electron_maxstep = 500,
+    mixing_beta = 0.35
+    electron_maxstep = 100,
     mixing_mode = 'local-TF',
 /
 &IONS
