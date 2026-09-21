@@ -32,6 +32,7 @@ storelibdebugit.txt.*
 # Raw QE / SLURM outputs (regenerable; far too large for git)
 # ---------------------------------------------------------------------------
 *.out
+*.out.*
 *.pwo
 *.bfgs
 *.mix*
@@ -50,6 +51,7 @@ storelibdebugit.txt.*
 # Bulk data snapshots
 # ---------------------------------------------------------------------------
 *.tar.gz
+*.zip
 
 # ---------------------------------------------------------------------------
 # Legacy 44.1/441 generation (archived on purpose; see archive_legacy_cluster_runs.py)
