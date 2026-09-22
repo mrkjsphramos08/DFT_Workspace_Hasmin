@@ -1,0 +1,87 @@
+# .clineignore — Cline context filter (token-efficient)
+# Purpose: keep Cline's context window focused on source-of-truth files only.
+# Everything matched here is regenerable, huge, or irrelevant to code tasks.
+#
+# Syntax: standard gitignore-style patterns. See https://git-scm.com/docs/gitignore
+
+# ---------------------------------------------------------------------------
+# Python bytecode / caches
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# ---------------------------------------------------------------------------
+# Editors / OS
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+
+# ---------------------------------------------------------------------------
+# System / RAID-controller logs (unrelated to the project)
+# ---------------------------------------------------------------------------
+storcli.log
+storelibdebugit.txt*
+storelibdebugit.txt
+storelibdebugit.txt.*
+
+# ---------------------------------------------------------------------------
+# Quantum ESPRESSO scratch directories (regenerable, very large)
+# ---------------------------------------------------------------------------
+**/tmp/
+*.save/
+
+# ---------------------------------------------------------------------------
+# Raw QE / SLURM outputs (regenerable; far too large for context)
+# ---------------------------------------------------------------------------
+*.pwo
+*.bfgs
+*.mix*
+*.hub*
+*.wfc*
+*.update
+*.occup
+*.yaml
+
+# ---------------------------------------------------------------------------
+# Derived structure exports (regenerable from the CIFs)
+# ---------------------------------------------------------------------------
+*.xyz
+
+# ---------------------------------------------------------------------------
+# Bulk data snapshots
+# ---------------------------------------------------------------------------
+*.tar.gz
+*.zip
+
+# ---------------------------------------------------------------------------
+# Legacy 44.1/441 generation (archived on purpose; see archive_legacy_cluster_runs.py)
+# ---------------------------------------------------------------------------
+05_metals_legacy/
+
+# ---------------------------------------------------------------------------
+# Stray duplicate of 04_slab/3_layers/run.sh
+# ---------------------------------------------------------------------------
+04_slab/run copy.sh
+
+# ---------------------------------------------------------------------------
+# Quantum ESPRESSO large scratch files inside DFT directories
+# (keep .cif, .in, .out, run.sh accessible; ignore multi-GB regenerated data)
+# ---------------------------------------------------------------------------
+**/*.save/
+**/tmp/
+**/*.xml
+**/charge-density.dat
+**/data-file-schema.xml
+**/wfcup*.dat
+**/wfcdw*.dat
+**/occup.txt
+**/*paw*.txt
+**/*.hub*
+**/*.bfgs
+**/*.mix*
+**/*.wfc*
+**/*.update
+**/*.occup
