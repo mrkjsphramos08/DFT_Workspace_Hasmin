@@ -1,5 +1,6 @@
 &CONTROL
    calculation  = 'relax'
+   restart_mode  = 'restart',
    pseudo_dir = '/home/mark/pseudo_library/',
    outdir = './tmp/',
    forc_conv_thr = 4D-4,
@@ -21,7 +22,7 @@
    nspin = 2,
 /
 &ELECTRONS
-    mixing_beta = 0.5
+    mixing_beta = 0.35
     electron_maxstep = 500,
     mixing_mode = 'local-TF',
 /

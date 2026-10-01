@@ -4,6 +4,7 @@
 #SBATCH --ntasks=8
 #SBATCH --mail-type=ALL
 #SBATCH --requeue
+#SBATCH --exclude n004
 
 set -euo pipefail
 

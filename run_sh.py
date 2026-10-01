@@ -19,7 +19,7 @@ PROJECT_ROOT = next(
     SCRIPT_PATH.parent
 )
 METALS_DIR = PROJECT_ROOT / "05_metals"
-
+ 
 def generate_slurm_script(input_in_path):
     """Generates run.sh in the same directory as the target INPUT_*.in file."""
     folder = input_in_path.parent

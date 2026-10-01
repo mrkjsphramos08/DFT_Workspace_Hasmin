@@ -99,6 +99,31 @@ sacct -j <jobid> --format=JobID,JobName,Elapsed,MaxRSS,State,ExitCode
 tail -f slurm-<jobid>.out
 ```
 
+## 5b. SLURM Core Usage & Accounting
+
+```bash
+# Show your running/pending jobs with CPU allocation
+squeue -u $USER -o "%.18i %.9P %.8j %.8u %.2t %.10M %.6D %R %C"
+
+# Detailed job info (includes NumCPUs, NumNodes, CPUs/Task)
+scontrol show job <jobid>
+
+# Your recent jobs with CPU time used (last 7 days)
+sacct -u $USER --starttime=$(date -d '7 days ago' +%Y-%m-%d) --format=JobID,JobName,Partition,AllocCPUS,State,ExitCode,Elapsed,CPUTime,MaxRSS
+
+# Summary of CPU hours used this month
+sacct -u $USER --starttime=$(date -d '30 days ago' +%Y-%m-%d) --format=AllocCPUS,CPUTime,Elapsed | awk 'NR>2 {cpus+=$1; cput+=$2; wall+=$3} END {print "Total CPUs allocated:", cpus, "\nTotal CPU time:", cput, "\nTotal wall time:", wall}'
+
+# Cluster partition/node CPU availability
+sinfo -o "%P %D %C %m %G"
+# %C = CPUs(A/I/O/T) = Allocated/Idle/Other/Total
+
+# Inside a running job: check allocated cores
+echo $SLURM_CPUS_ON_NODE      # CPUs on this node
+echo $SLURM_NTASKS            # Total tasks (cores) allocated
+echo $SLURM_CPUS_PER_TASK     # CPUs per task
+```
+
 ## 6. Quick QE Convergence/Status Checks (grep, no Python)
 
 ```bash

@@ -1,5 +1,6 @@
 &CONTROL
    calculation  = 'relax'
+   restart_mode  = 'restart',
    pseudo_dir = '/home/mark/pseudo_library/',
    outdir = './tmp/',
    forc_conv_thr = 4D-4,

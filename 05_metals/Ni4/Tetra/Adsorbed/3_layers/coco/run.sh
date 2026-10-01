@@ -13,4 +13,4 @@ echo "working directory = "$SLURM_SUBMIT_DIR
 
 module load qe/7.2
 
-mpiexec -np 16 pw.x -i INPUT_adsorbed_Ni4_Tetra_latest_coco.in > OUTPUT_adsorbed_Ni4_Tetra_latest_coco.out
+mpiexec -np 16 pw.x -i INPUT_adsorbed_Ni4_Tetra_latest_coco.in >> OUTPUT_adsorbed_Ni4_Tetra_latest_coco.out

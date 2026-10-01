@@ -11,7 +11,7 @@
    nat = 76,
    ntyp = 4
   starting_magnetization(2) = 0.1
-  starting_magnetization(4) = 0.1,
+  starting_magnetization(4) = 0.5,
    ecutwfc = 40.4
    ecutrho = 500
    smearing = 'gaussian',
@@ -27,6 +27,7 @@
 /
 &IONS
    ion_dynamics = 'bfgs'
+   upscale = 1.0
 /
 
 ATOMIC_SPECIES
