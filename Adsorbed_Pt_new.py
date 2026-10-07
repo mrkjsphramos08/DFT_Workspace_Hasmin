@@ -1,7 +1,7 @@
 """Build adsorbed single-atom Pt structures on an LCO slab.
 
 Places the Pt atom from the Pt1 folder at each chosen adsorption site,
-2.0 A above the topmost surface atoms, and writes
+2.5 A above the topmost surface atoms, and writes
 ``adsorbed_<pt1-stem>_<site>.cif`` under the slab profile's namespace.
 Surface-site selection works in fractional ``z`` because slab CIFs wrap across
 the periodic boundary.
@@ -25,7 +25,7 @@ PROJECT_ROOT = next(
 )
 
 PT1_DIR = PROJECT_ROOT / "05_metals" / "Pt1"
-ADSORPTION_HEIGHT = 2.0  # Å between the top surface layer and the Pt atom
+ADSORPTION_HEIGHT = 2.5  # Å between the top surface layer and the Pt atom
 SURFACE_Z_TOLERANCE = 0.8
 SURFACE_FRAC_Z_MAX = 0.8  # ignore atoms wrapped across the periodic boundary
 PAIR_MAX_DISTANCE = 4.5

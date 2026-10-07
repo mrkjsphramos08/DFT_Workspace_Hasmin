@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name='Pt1_adsorbed_co'
 #SBATCH --partition=high
-#SBATCH --ntasks=16
+#SBATCH --ntasks=8
 #SBATCH --mail-type=ALL
 #SBATCH --requeue
 
@@ -13,4 +13,4 @@ echo "working directory = "$SLURM_SUBMIT_DIR
 
 module load qe/7.2
 
-mpiexec -np 16 pw.x -i INPUT_adsorbed_Pt1_latest_co.in > OUTPUT_adsorbed_Pt1_latest_co.out
+mpiexec -np 8 pw.x -i INPUT_adsorbed_Pt1_latest_co_new_template..in > OUTPUT_adsorbed_Pt1_latest_co_new_template..out

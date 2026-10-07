@@ -66,7 +66,7 @@ EV_A2_TO_J_M2 = 16.0218         # 1 eV/Ang^2 in J/m^2
 BOHR_TO_ANG = 0.529177249       # 1 Bohr in Angstrom
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-DEFAULT_SLAB = SCRIPT_DIR / "04_slab" / "4_layers" / "3x2_4_layers.out"
+DEFAULT_SLAB = SCRIPT_DIR / "04_slab" / "3_layers_90" / "3x2_3_layers_90.out"
 DEFAULT_BULK = SCRIPT_DIR / "01_vc_relax" / "LCO_bulk.out"
 
 # ---------------------------------------------------------------------------

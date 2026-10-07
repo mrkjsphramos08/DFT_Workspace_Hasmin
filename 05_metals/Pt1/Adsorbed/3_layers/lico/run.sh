@@ -13,4 +13,4 @@ echo "working directory = "$SLURM_SUBMIT_DIR
 
 module load qe/7.2
 
-mpiexec -np 8 pw.x -i INPUT_adsorbed_Pt1_latest_lico.in > OUTPUT_adsorbed_Pt1_latest_lico.out
+mpiexec -np 8 pw.x -i INPUT_adsorbed_Pt1_latest_lico_new_template..in > OUTPUT_adsorbed_Pt1_latest_lico_new_template..out

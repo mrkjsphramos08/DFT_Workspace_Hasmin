@@ -17,6 +17,10 @@ SLAB_PROFILES = {
         "slab_path": PROJECT_ROOT / "04_slab" / "4_layers" / "3x2_4_layers.cif",
         "output_name": "4_layers",
     },
+    "3_layers_90": {
+                "slab_path": PROJECT_ROOT / "04_slab" / "3_layers_90" / "3x2_3_layers_90.cif",
+                "output_name": "3_layers_90",
+    },
 }
 
 DEFAULT_SLAB = "3_layers"

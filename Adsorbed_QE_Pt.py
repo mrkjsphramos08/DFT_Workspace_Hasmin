@@ -41,14 +41,14 @@ HUBBARD_BLOCK = "HUBBARD (ortho-atomic)\nU Co-3d 3.2\n"
 CARDS_TO_STRIP = ("ATOMIC_SPECIES", "K_POINTS", "HUBBARD", "CELL_PARAMETERS", "ATOMIC_POSITIONS")
 
 
-def find_template_in(pt1_dir):
-    """Find the bare-atom template .in file directly in the Pt1 directory."""
+def find_templates_in(pt1_dir):
+    """Find all bare-atom template .in files directly in the Pt1 directory."""
     if not pt1_dir.exists():
-        return None
+        return []
 
     # Ignore any 'adsorbed' input files; sort so the choice is deterministic
     templates = sorted(f for f in pt1_dir.glob("*.in") if "adsorbed" not in f.name.lower())
-    return templates[0] if templates else None
+    return templates
 
 
 def get_frozen_positions_and_cell(cif_path, num_adsorbate_atoms=NUM_ADSORBATE_ATOMS,
@@ -86,13 +86,16 @@ def get_frozen_positions_and_cell(cif_path, num_adsorbate_atoms=NUM_ADSORBATE_AT
 
 
 def extract_template_starting_mag(template_content):
-    """Extract starting_magnetization value from the template input file."""
+    """Extract starting_magnetization value from the template input file.
+    
+    Returns the last starting_magnetization value found, or None if not present.
+    """
     matches = re.findall(
         r"starting_magnetization(?:\(\s*[\d\w]+\s*\))?\s*=\s*([\d\.\-+eE]+)",
         template_content,
         flags=re.IGNORECASE
     )
-    return float(matches[-1]) if matches else 0.1
+    return float(matches[-1]) if matches else None
 
 
 def build_atomic_species_block(elements):
@@ -124,7 +127,9 @@ def process_template_header(template_content, total_atoms, elements, adsorbate_e
     mag_entries = []
     for i, elem in enumerate(elements, start=1):
         if elem == adsorbate_element:
-            mag_entries.append(f"  starting_magnetization({i}) = {template_mag}")
+            # Only add starting_magnetization for adsorbate if template had one
+            if template_mag is not None:
+                mag_entries.append(f"  starting_magnetization({i}) = {template_mag}")
         elif elem == "Co":
             mag_entries.append(f"  starting_magnetization({i}) = 0.1")
 
@@ -163,8 +168,8 @@ def main():
         print(f"Error: Directory '{PT1_DIR}' does not exist.")
         return
 
-    template_in = find_template_in(PT1_DIR)
-    if template_in is None:
+    templates = find_templates_in(PT1_DIR)
+    if not templates:
         print(f"Error: No template '.in' found in {PT1_DIR}")
         return
 
@@ -179,39 +184,33 @@ def main():
         )
         return
 
-    template_content = template_in.read_text()
+    for template_path in templates:
+        template_content = template_path.read_text()
+        template_stem = template_path.stem  # e.g. "44.1_template" or "new_template"
 
-    for cif_path in adsorbed_cifs:
-        if cif_path.stat().st_size == 0:
-            print(f"Skipping empty CIF file: {cif_path}")
-            continue
+        for cif_path in adsorbed_cifs:
+            if cif_path.stat().st_size == 0:
+                print(f"Skipping empty CIF file: {cif_path}")
+                continue
 
-        has_existing_output = any(
-            child.is_file() and child.suffix.lower() == ".out"
-            for child in cif_path.parent.iterdir()
-        )
-        if has_existing_output:
-            print(f"Skipping [{cif_path.parent.name}]: QE output already exists in {cif_path.parent}")
-            continue
+            try:
+                total_atoms, elements, adsorbate_element, cell_str, pos_str = get_frozen_positions_and_cell(cif_path)
+                header_content = process_template_header(
+                    template_content, total_atoms, elements, adsorbate_element
+                )
+            except Exception as e:
+                print(f"Error processing {cif_path.name}: {e}")
+                continue
 
-        try:
-            total_atoms, elements, adsorbate_element, cell_str, pos_str = get_frozen_positions_and_cell(cif_path)
-            header_content = process_template_header(
-                template_content, total_atoms, elements, adsorbate_element
-            )
-        except Exception as e:
-            print(f"Error processing {cif_path.name}: {e}")
-            continue
+            output_in_path = cif_path.parent / f"INPUT_{cif_path.stem}_{template_stem}.in"
+            with open(output_in_path, "w") as f:
+                f.write(header_content + "\n")
+                f.write(cell_str + "\n")
+                f.write(pos_str + "\n")
+                f.write(HUBBARD_BLOCK + "\n")
+                f.write(SURFACE_KPOINTS)
 
-        output_in_path = cif_path.parent / f"INPUT_{cif_path.stem}.in"
-        with open(output_in_path, "w") as f:
-            f.write(header_content + "\n")
-            f.write(cell_str + "\n")
-            f.write(pos_str + "\n")
-            f.write(HUBBARD_BLOCK + "\n")
-            f.write(SURFACE_KPOINTS)
-
-        print(f"Generated [{cif_path.parent.name}]: {output_in_path.name} (using {template_in.name})")
+            print(f"Generated [{cif_path.parent.name}]: {output_in_path.name} (using {template_path.name})")
 
 
 if __name__ == "__main__":

@@ -17,7 +17,6 @@
    degauss = 0.01D0,
    vdw_corr= 'grimme-d3',
    nspin = 2,
-   starting_magnetization(1) = 0.5,
 /
 &ELECTRONS
     mixing_beta = 0.5
