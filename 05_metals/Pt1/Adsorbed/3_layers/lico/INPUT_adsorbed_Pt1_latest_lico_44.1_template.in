@@ -1,11 +1,6 @@
 &CONTROL
    calculation  = 'relax'
    pseudo_dir = '/home/mark/pseudo_library/',
-   outdir = './tmp/',
-   forc_conv_thr = 4D-4,
-   nstep = 100
-   prefix = 'pt4-tetrahedron'
-/
 &SYSTEM
    ibrav = 0,
    nat = 73,
@@ -19,6 +14,7 @@
    degauss = 0.01D0,
    vdw_corr= 'grimme-d3',
    nspin = 2,
+   starting_magnetization(1) = 0.5,
 /
 &ELECTRONS
     mixing_beta = 0.5
@@ -34,7 +30,8 @@ ATOMIC_SPECIES
   Co   58.933  co_pbe_v1.2.uspp.F.UPF
   O    15.999  o_pbe_v1.2.uspp.F.UPF
   Pt  195.084  pt_pbe_v1.4.uspp.F.UPF
-
+   prefix = 'lco_Pt1_lico_44.1_template'
+   outdir = './tmp',
 
 CELL_PARAMETERS angstrom
     8.4635099841    0.0000000000    0.0000000000

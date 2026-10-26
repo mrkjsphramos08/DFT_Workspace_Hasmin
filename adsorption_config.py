@@ -18,8 +18,12 @@ SLAB_PROFILES = {
         "output_name": "4_layers",
     },
     "3_layers_90": {
-                "slab_path": PROJECT_ROOT / "04_slab" / "3_layers_90" / "3x2_3_layers_90.cif",
-                "output_name": "3_layers_90",
+        "slab_path": PROJECT_ROOT / "04_slab" / "3_layers_90" / "3x2_3_layers_90.cif",
+        "output_name": "3_layers_90",
+    },
+    "3_layers_new": {
+        "slab_path": PROJECT_ROOT / "04_slab" / "3_layers_new" / "3x2_3_layers_new.cif",
+        "output_name": "3_layers_new",
     },
 }
 

@@ -54,10 +54,21 @@ module load qe/7.2
 mpiexec -np 16 pw.x -i {input_file_name} > {output_file_name}
 """
     
-    run_sh_path = folder / "run.sh"
+    # Derive a unique run.sh name from the template stem so multiple
+    # input files (one per template) in the same site directory don't
+    # overwrite each other's SLURM script.
+    stem = input_in_path.name
+    site = site_name
+    marker = f"_{site}_"
+    idx = stem.rfind(marker)
+    if idx >= 0:
+        template_stem = stem[idx + len(marker):].replace(".in", "")
+    else:
+        template_stem = stem.replace("INPUT_", "").replace(".in", "")
+    run_sh_path = folder / f"run_{template_stem}.sh"
     with open(run_sh_path, "w") as f:
         f.write(slurm_content)
-        
+
     print(f"Generated SLURM script: {run_sh_path.relative_to(PROJECT_ROOT)}")
 
 def main():
@@ -82,10 +93,10 @@ def main():
         if input_path.parent.name not in VALID_SITES or not input_path.name.startswith("INPUT_"):
             continue
 
-        has_output = any(
-            child.is_file() and child.suffix.lower() == ".out"
-            for child in input_path.parent.iterdir()
-        )
+        # The slurm script redirects stdout to OUTPUT_<input_stem>.out;
+        # check for that specific file so each variant is tracked independently.
+        expected_output = input_path.name.replace("INPUT_", "OUTPUT_").replace(".in", ".out")
+        has_output = (input_path.parent / expected_output).is_file()
         if not has_output:
             input_files.append(input_path)
 

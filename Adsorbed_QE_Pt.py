@@ -11,34 +11,30 @@ from pathlib import Path
 from ase.io import read
 
 from adsorption_config import DEFAULT_SLAB, SLAB_CHOICES, get_slab_profile
-from adsorption_sites import VALID_SITES
+from adsorption_sites import SITE_ORDER, VALID_SITES
+from lco.paths import PROJECT_ROOT
+from lco.qe_input import (
+    PSEUDO_DB,
+    CARDS_TO_STRIP,
+    HUBBARD_BLOCK,
+    build_atomic_species_block,
+    strip_old_cards,
+    make_prefix_directive,
+    SURFACE_KPOINTS,
+    variant_prefix,
+)
 
 # -------------------------------------------------------------------------
 # Configuration & Path Resolution
 # -------------------------------------------------------------------------
 SCRIPT_PATH = Path(__file__).resolve()
-
-PROJECT_ROOT = next(
-    (p for p in [SCRIPT_PATH.parent] + list(SCRIPT_PATH.parents) if (p / "05_metals").exists()),
-    SCRIPT_PATH.parent
-)
 PT1_DIR = PROJECT_ROOT / "05_metals" / "Pt1"
 
 NUM_ADSORBATE_ATOMS = 1  # single Pt atom, always the last atom in the CIF
 Z_CUTOFF_FRACTION = 0.5  # Freeze bottom 50% of slab height
 
-# Reference pseudopotentials and atomic masses
-PSEUDO_DB = {
-    "Li": {"mass": 6.941,  "upf": "li_pbe_v1.4.uspp.F.UPF"},
-    "Co": {"mass": 58.933, "upf": "co_pbe_v1.2.uspp.F.UPF"},
-    "O":  {"mass": 15.999, "upf": "o_pbe_v1.2.uspp.F.UPF"},
-    "Pt": {"mass": 195.084,"upf": "pt_pbe_v1.4.uspp.F.UPF"},
-}
-
-SURFACE_KPOINTS = "K_POINTS (automatic)\n4 3 1 0 0 0\n"
-HUBBARD_BLOCK = "HUBBARD (ortho-atomic)\nU Co-3d 3.2\n"
-
-CARDS_TO_STRIP = ("ATOMIC_SPECIES", "K_POINTS", "HUBBARD", "CELL_PARAMETERS", "ATOMIC_POSITIONS")
+# Additional metadata needed for unique prefixes
+SYSTEM_TAG = "Pt1"
 
 
 def find_templates_in(pt1_dir):
@@ -114,12 +110,9 @@ def process_template_header(template_content, total_atoms, elements, adsorbate_e
     ntyp = len(elements)
     template_mag = extract_template_starting_mag(template_content)
 
-    content = re.sub(
-        r"starting_magnetization\(\s*[\d\w]+\s*\)\s*=\s*[\d\.eE+-]+,?",
-        "",
-        template_content,
-        flags=re.IGNORECASE
-    )
+    # Strip every regenerated card (incl. prefix/outdir) so we can inject a
+    # unique pair below -- shared scratch would otherwise clobber other variants.
+    content = strip_old_cards(template_content)
 
     content = re.sub(r"nat\s*=\s*\d+", f"nat = {total_atoms}", content, flags=re.IGNORECASE)
     content = re.sub(r"ntyp\s*=\s*\d+", f"ntyp = {ntyp}", content, flags=re.IGNORECASE)
@@ -136,21 +129,7 @@ def process_template_header(template_content, total_atoms, elements, adsorbate_e
     mag_str = "\n" + "\n".join(mag_entries) if mag_entries else ""
     content = re.sub(r"(ntyp\s*=\s*\d+)", r"\1" + mag_str, content, flags=re.IGNORECASE)
 
-    cleaned_lines = []
-    skip_block = False
-    for line in content.splitlines():
-        stripped = line.strip().upper()
-        if stripped.startswith(CARDS_TO_STRIP):
-            skip_block = True
-            continue
-
-        if skip_block and (stripped.startswith("&") or stripped.startswith("OCCUPATIONS")):
-            skip_block = False
-
-        if not skip_block and line.strip():
-            cleaned_lines.append(line)
-
-    header = "\n".join(cleaned_lines).strip()
+    header = content.strip()
     return f"{header}\n\n{build_atomic_species_block(elements)}\n"
 
 
@@ -161,6 +140,12 @@ def main():
         choices=SLAB_CHOICES,
         default=DEFAULT_SLAB,
         help=f"Slab profile to process (default: {DEFAULT_SLAB})",
+    )
+    parser.add_argument(
+        "--sites",
+        nargs="+",
+        choices=SITE_ORDER,
+        help="Only generate inputs for these sites (default: all)",
     )
     args = parser.parse_args()
 
@@ -173,20 +158,21 @@ def main():
         print(f"Error: No template '.in' found in {PT1_DIR}")
         return
 
+    selected_sites = set(args.sites) if args.sites else VALID_SITES
     output_name = get_slab_profile(args.slab)["output_name"]
     all_cifs = PT1_DIR.rglob(f"Adsorbed/{output_name}/*/*.cif")
-    adsorbed_cifs = sorted(p for p in all_cifs if p.parent.name in VALID_SITES)
+    adsorbed_cifs = sorted(p for p in all_cifs if p.parent.name in selected_sites)
 
     if not adsorbed_cifs:
         print(
-            f"No valid CIF files found inside {PT1_DIR}/Adsorbed/{output_name}/"
-            "{li,co,lico,centered,oxygen,lili,coco}/"
+            f"No CIF files found inside {PT1_DIR}/Adsorbed/{output_name}/ "
+            f"for sites: {', '.join(sorted(selected_sites))}"
         )
         return
 
     for template_path in templates:
         template_content = template_path.read_text()
-        template_stem = template_path.stem  # e.g. "44.1_template" or "new_template"
+        template_stem = template_path.stem  # e.g., "44.1_template" or "new_template"
 
         for cif_path in adsorbed_cifs:
             if cif_path.stat().st_size == 0:
@@ -202,7 +188,23 @@ def main():
                 print(f"Error processing {cif_path.name}: {e}")
                 continue
 
+            # Build variant-specific prefix/outdir so multiple runs on same machine don't clobber each other.
+            unique_prefix = variant_prefix(SYSTEM_TAG, cif_path.parent.name, template_stem)
+            prefix_outdir_lines = make_prefix_directive(unique_prefix, "./tmp")
+            header_content = header_content.rstrip() + "\n" + prefix_outdir_lines.rstrip() + "\n"
+
             output_in_path = cif_path.parent / f"INPUT_{cif_path.stem}_{template_stem}.in"
+
+            # Skip if this variant's OUTPUT_<prefix>.out already exists (idempotent runs).
+            output_prefix = f"OUTPUT_{unique_prefix}"
+            has_existing = any(
+                child.is_file() and child.name.startswith(output_prefix) and child.suffix.lower() == ".out"
+                for child in cif_path.parent.iterdir()
+            )
+            if has_existing:
+                print(f"Skipping [{cif_path.parent.name}]: QE output already exists in {cif_path.parent}")
+                continue
+
             with open(output_in_path, "w") as f:
                 f.write(header_content + "\n")
                 f.write(cell_str + "\n")
@@ -211,7 +213,5 @@ def main():
                 f.write(SURFACE_KPOINTS)
 
             print(f"Generated [{cif_path.parent.name}]: {output_in_path.name} (using {template_path.name})")
-
-
 if __name__ == "__main__":
     main()

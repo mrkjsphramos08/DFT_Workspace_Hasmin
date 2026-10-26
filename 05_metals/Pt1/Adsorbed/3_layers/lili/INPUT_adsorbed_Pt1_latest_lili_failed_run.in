@@ -11,7 +11,7 @@
    nat = 73,
    ntyp = 4
   starting_magnetization(2) = 0.1
-  starting_magnetization(4) = 0.5,
+  starting_magnetization(4) = 0.5, #try to remove magenetization
    ecutwfc = 40.4
    ecutrho = 500
    smearing = 'gaussian',
@@ -21,7 +21,7 @@
    nspin = 2,
 /
 &ELECTRONS
-    mixing_beta = 0.5
+    mixing_beta = 0.5 #lower the mixing beta to 0.3 if SCF does not converge
     electron_maxstep = 500,
     mixing_mode = 'local-TF',
 /

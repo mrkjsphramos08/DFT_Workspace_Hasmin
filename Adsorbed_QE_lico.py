@@ -12,33 +12,30 @@ from ase.io import read
 
 from adsorption_config import DEFAULT_SLAB, SLAB_CHOICES, get_slab_profile
 from adsorption_sites import VALID_SITES
+from lco.paths import PROJECT_ROOT
+from lco.qe_input import (
+    PSEUDO_DB,
+    CARDS_TO_STRIP,
+    HUBBARD_BLOCK,
+    build_atomic_species_block,
+    strip_old_cards,
+    make_prefix_directive,
+    SURFACE_KPOINTS,
+    variant_prefix,
+)
 
 # -------------------------------------------------------------------------
 # Configuration & Path Resolution
 # -------------------------------------------------------------------------
 SCRIPT_PATH = Path(__file__).resolve()
-
-PROJECT_ROOT = next(
-    (p for p in [SCRIPT_PATH.parent] + list(SCRIPT_PATH.parents) if (p / "05_metals").exists()),
-    SCRIPT_PATH.parent
-)
 METALS_DIR = PROJECT_ROOT / "05_metals"
 
 NUM_CLUSTER_ATOMS = 4
 Z_CUTOFF_FRACTION = 0.5  # Freeze bottom 50% of slab height
 
-# Reference pseudopotentials and atomic masses
-PSEUDO_DB = {
-    "Li": {"mass": 6.941,  "upf": "li_pbe_v1.4.uspp.F.UPF"},
-    "Co": {"mass": 58.933, "upf": "co_pbe_v1.2.uspp.F.UPF"},
-    "O":  {"mass": 15.999, "upf": "o_pbe_v1.2.uspp.F.UPF"},
-    "Pt": {"mass": 195.084,"upf": "pt_pbe_v1.4.uspp.F.UPF"},
-    "Ni": {"mass": 58.693, "upf": "ni_pbe_v1.4.uspp.F.UPF"},
-    "Cu": {"mass": 63.546, "upf": "cu_pbe_v1.2.uspp.F.UPF"},
-}
+# Additional metadata needed for unique prefixes
+SYSTEM_TAG = "Pt4_tetra"
 
-SURFACE_KPOINTS = "K_POINTS (automatic)\n4 3 1 0 0 0\n"
-HUBBARD_BLOCK = "HUBBARD (ortho-atomic)\nU Co-3d 3.2\n"
 
 def find_template_in(tetra_dir):
     """Finds the template .in file directly in the Tetra directory (e.g., INPUT_Pt4_tetra.in)."""
@@ -118,12 +115,7 @@ def process_template_header(template_content, total_atoms, elements, cluster_met
     ntyp = len(elements)
     template_mag = extract_template_starting_mag(template_content)
 
-    content = re.sub(
-        r"starting_magnetization\(\s*[\d\w]+\s*\)\s*=\s*[\d\.eE+-]+,?", 
-        "", 
-        template_content, 
-        flags=re.IGNORECASE
-    )
+    content = strip_old_cards(template_content)
 
     content = re.sub(r"nat\s*=\s*\d+", f"nat = {total_atoms}", content, flags=re.IGNORECASE)
     content = re.sub(r"ntyp\s*=\s*\d+", f"ntyp = {ntyp}", content, flags=re.IGNORECASE)
@@ -139,31 +131,7 @@ def process_template_header(template_content, total_atoms, elements, cluster_met
     mag_str = "\n" + "\n".join(mag_entries) if mag_entries else ""
     content = re.sub(r"(ntyp\s*=\s*\d+)", r"\1" + mag_str, content, flags=re.IGNORECASE)
 
-    lines = content.splitlines()
-    cleaned_lines = []
-    skip_block = False
-
-    cards_to_strip = [
-        "ATOMIC_SPECIES", 
-        "K_POINTS", 
-        "HUBBARD", 
-        "CELL_PARAMETERS", 
-        "ATOMIC_POSITIONS"
-    ]
-
-    for line in lines:
-        stripped = line.strip().upper()
-        if any(stripped.startswith(card) for card in cards_to_strip):
-            skip_block = True
-            continue
-        
-        if skip_block and (stripped.startswith("&") or stripped.startswith("OCCUPATIONS")):
-            skip_block = False
-
-        if not skip_block and line.strip():
-            cleaned_lines.append(line)
-
-    header = "\n".join(cleaned_lines).strip()
+    header = content.strip()
     species_str = build_atomic_species_block(elements)
     
     return f"{header}\n\n{species_str}\n"
@@ -208,9 +176,18 @@ def main():
             print(f"Skipping {cif_path.name}: No template '.in' found in {tetra_dir}")
             continue
 
-        output_in_path = cif_path.parent / f"INPUT_{cif_path.stem}.in"
+        template_stem = template_in.stem  # e.g., "44.1_template" or "40.4_template"
+
+        # Build variant-specific prefix/outdir so multiple runs on same machine don't clobber each other.
+        unique_prefix = variant_prefix(SYSTEM_TAG, cif_path.parent.name, template_stem)
+        prefix_outdir_lines = make_prefix_directive(unique_prefix, "./tmp")
+
+        output_in_path = cif_path.parent / f"INPUT_{cif_path.stem}_{template_stem}.in"
+
+        # Skip if this variant's OUTPUT_<prefix>.out already exists (idempotent runs).
+        output_prefix = f"OUTPUT_{unique_prefix}"
         has_existing_output = any(
-            child.is_file() and child.suffix.lower() == ".out"
+            child.is_file() and child.name.startswith(output_prefix) and child.suffix.lower() == ".out"
             for child in cif_path.parent.iterdir()
         )
         if has_existing_output:
@@ -231,6 +208,7 @@ def main():
         header_content = process_template_header(
             template_content, total_atoms, elements, cluster_metal
         )
+        header_content = header_content.rstrip() + "\n" + prefix_outdir_lines.rstrip() + "\n"
 
         with open(output_in_path, "w") as f:
             f.write(header_content + "\n")
