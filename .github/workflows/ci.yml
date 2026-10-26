@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Import check
+        run: |
+          python -c "import lco; print('lco OK:', lco.__all__)"
+          python -c "from lco.paths import PROJECT_ROOT; print('root:', PROJECT_ROOT)"
+          python -c "from lco.qe_input import PSEUDO_DB, variant_prefix; print('qe_input OK')"
+          python -c "from lco.qe_output import parse_scf_history; print('qe_output OK')"
+
+      - name: Compile all scripts
+        run: |
+          python -m compileall .
