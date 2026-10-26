@@ -3,3 +3,6 @@
 ase>=3.22
 numpy>=1.24
 pandas>=1.5
+
+# Test dependencies
+pytest>=7.0
