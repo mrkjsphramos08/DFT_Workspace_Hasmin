@@ -4,9 +4,12 @@ Automated [Quantum ESPRESSO](https://www.quantum-espresso.org/) workflow for stu
 **M₄ metal clusters adsorbed on LiCoO₂ (LCO) surfaces**, from bulk relaxation through
 slab construction, cluster generation, site adsorption, job submission and analysis.
 
+[![CI](https://github.com/mrkjsphramos08/DFT_Workspace_Hasmin/actions/workflows/ci.yml/badge.svg)](https://github.com/mrkjsphramos08/DFT_Workspace_Hasmin/actions/workflows/ci.yml)
+
 Everything is driven by small, composable Python scripts built on
-[ASE](https://wiki.fysik.dtu.dk/ase/), so each stage can be re-run independently and
-the whole campaign is reproducible from the inputs kept in this repository.
+[ASE](https://wiki.fysik.dtu.dk/ase/), with shared logic factored into the in-repo
+`lco/` package, so each stage can be re-run independently and the whole campaign is
+reproducible from the inputs kept in this repository.
 
 | | |
 |---|---|
@@ -79,6 +82,7 @@ Understanding the file names is the key to reading this tree.
 The `_ecut40.4_500` tag is what distinguishes the **current** generation from the
 archived 44.1/441 one. When the cutoffs changed, `prepare_cluster_rerun.py` wrote
 tagged copies rather than overwriting, so both generations coexisted until
+`archive_legacy_cluster_runs.py` moved the old ones into `05_metals_legacy/`.
 
 ---
 
@@ -191,6 +195,41 @@ regenerated.
 
 Common flags: `--slab {3_layers,4_layers}`, `--apply` (the housekeeping scripts are
 dry-run by default), `--cluster` / `--shape` on `prepare_cluster_rerun.py`.
+
+### The `lco/` shared library
+
+Shared logic that was previously copy-pasted across scripts lives in the `lco/` package:
+
+| module | provides |
+|---|---|
+| `lco.paths` | `PROJECT_ROOT`, `PSEUDO_DIR`, `SCRATCH_DIR` — single source of truth for filesystem locations |
+| `lco.qe_input` | `PSEUDO_DB`, `qe_command`, `variant_prefix` — building `pw.x` input decks |
+| `lco.qe_output` | `parse_scf_history`, `final_accuracy` — parsing QE outputs for convergence analysis |
+
+Import them in any script:
+
+```python
+from lco.paths import PROJECT_ROOT, PSEUDO_DIR
+from lco.qe_input import PSEUDO_DB, qe_command
+```
+
+---
+
+## Testing
+
+The repository ships with a test suite powered by [pytest](https://docs.pytest.org/).
+
+```bash
+# run the tests
+python -m pytest tests/
+
+# CI performs the same checks:
+#   - import all lco submodules
+#   - compile every .py file (compileall)
+```
+
+`tests/test_qe_output.py` exercises `parse_scf_history` against a sample QE output
+shipped in the repository. If the sample is absent the test is auto-skipped.
 
 ---
 
