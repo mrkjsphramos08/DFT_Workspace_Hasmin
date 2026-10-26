@@ -45,19 +45,48 @@ reproducible from the inputs kept in this repository.
 │               └── 4_layers/<site>/
 ├── 05_metals_legacy/       archived 44.1/441 generation (NOT tracked in git)
 ├── Adsorbed_clusters_tetra_new.py
+├── Adsorbed_Pt_new.py
 ├── Adsorbed_QE_lico.py
+├── Adsorbed_QE_Pt.py
 ├── adsorption_config.py
 ├── adsorption_sites.py
 ├── archive_legacy_cluster_runs.py
 ├── cleanup_adsorbed_folders.py
 ├── migrate_adsorption_folders.py
+├── metal_clusters_specs.py
 ├── prepare_cluster_rerun.py
+├── pt1_script.py
 ├── regenerate_cif.py
 ├── run_sh.py
 ├── run_sh_clusters.py
+├── run_sh_pt.py
+├── scf_timing_check.py
 ├── Surface_energy.py
 ├── dft_terminal_cheatsheet.md
-└── qe_dft_reference_cheatsheet.md
+├── qe_dft_reference_cheatsheet.md
+├── lco/
+└── 04_slab/
+│   ├── 3_layers/
+│   ├── 3_layers_90/
+│   ├── 3_layers_new/
+│   ├── 4_layers/
+│   ├── LCO_slab_distance.py
+│   ├── LCO_slab_relaxed_3x2.cif
+│   └── lco_slab_distances.csv
+├── 05_metals/
+│   └── <Metal>/
+│       ├── Rhom/
+│       └── Tetra/
+│           └── Adsorbed/
+│               ├── 3_layers/<site>/
+│               └── 4_layers/<site>/
+├── 05_metals_legacy/
+├── lco/
+│   ├── __init__.py
+│   ├── paths.py
+│   ├── qe_input.py
+│   └── qe_output.py
+├── tests/
 ```
 
 Raw Quantum ESPRESSO outputs, SLURM logs and `tmp/` scratch are **not tracked** —
@@ -182,15 +211,22 @@ regenerated.
 | `adsorption_config.py` | registry of slab profiles (slab CIF + output namespace); `DEFAULT_SLAB` |
 | `adsorption_sites.py` | canonical adsorption-site names and their order |
 | `Adsorbed_clusters_tetra_new.py` | place relaxed clusters on the slab sites and write `adsorbed_*_<site>.cif` |
+| `Adsorbed_Pt_new.py` | build Pt-specific adsorbed structures (alternative generator) |
 | `Adsorbed_QE_lico.py` | build pw.x inputs for adsorbed systems from the cluster template |
+| `Adsorbed_QE_Pt.py` | build Pt-specific pw.x inputs; includes `--sites` filter |
 | `run_sh.py` | SLURM scripts for adsorbed runs (16 tasks) |
 | `run_sh_clusters.py` | SLURM scripts for bare cluster runs (8 tasks) |
+| `run_sh_pt.py` | SLURM scripts for Pt runs |
 | `prepare_cluster_rerun.py` | regenerate cluster inputs at new cutoffs from a relaxed output |
+| `pt1_script.py` | Pt1 helper script |
 | `regenerate_cif.py` | rebuild `*_latest.cif` from QE outputs |
+| `scf_timing_check.py` | per-SCF-iteration timing report |
 | `archive_legacy_cluster_runs.py` | move the superseded 44.1/441 generation into `05_metals_legacy/` |
 | `migrate_adsorption_folders.py` | move unlabelled `Adsorbed/<site>/` into the `4_layers` namespace |
 | `cleanup_adsorbed_folders.py` | archive orphaned CIFs and stale `run.sh` leftovers |
 | `Surface_energy.py` | surface energy from the slab and bulk outputs |
+| `metal_clusters_specs.py` | metal cluster specifications summary |
+| `04_slab/LCO_slab_distance.py` | in-plane layer distances → `lco_slab_distances.csv` |
 | `04_slab/LCO_slab_distance.py` | in-plane layer distances → `lco_slab_distances.csv` |
 
 Common flags: `--slab {3_layers,4_layers}`, `--apply` (the housekeeping scripts are
@@ -202,15 +238,15 @@ Shared logic that was previously copy-pasted across scripts lives in the `lco/` 
 
 | module | provides |
 |---|---|
-| `lco.paths` | `PROJECT_ROOT`, `PSEUDO_DIR`, `SCRATCH_DIR` — single source of truth for filesystem locations |
-| `lco.qe_input` | `PSEUDO_DB`, `qe_command`, `variant_prefix` — building `pw.x` input decks |
+| `lco.paths` | `PROJECT_ROOT`, `SLAB_DIR`, `METALS_DIR` — single source of truth for filesystem locations |
+| `lco.qe_input` | `PSEUDO_DB`, `variant_prefix` — building `pw.x` input decks |
 | `lco.qe_output` | `parse_scf_history`, `final_accuracy` — parsing QE outputs for convergence analysis |
 
 Import them in any script:
 
 ```python
-from lco.paths import PROJECT_ROOT, PSEUDO_DIR
-from lco.qe_input import PSEUDO_DB, qe_command
+from lco.paths import PROJECT_ROOT, SLAB_DIR, METALS_DIR
+from lco.qe_input import PSEUDO_DB, variant_prefix
 ```
 
 ---
