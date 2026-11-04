@@ -1,0 +1,6 @@
+SLURM_JOBID=42977
+SLURM_JOB_NODELIST=n007
+SLURM_NNODES=1
+SLURMTMPDIR=
+working directory = /home/mark/LCO/01_bulk/05_metals/Pt1/Adsorbed/3_layers/li
+slurmstepd: error: *** JOB 42977 ON n007 CANCELLED AT 2026-10-06T20:03:17 ***

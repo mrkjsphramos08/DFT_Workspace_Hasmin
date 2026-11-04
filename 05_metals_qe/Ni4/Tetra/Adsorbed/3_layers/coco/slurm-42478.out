@@ -1,0 +1,6 @@
+SLURM_JOBID=42478
+SLURM_JOB_NODELIST=n003
+SLURM_NNODES=1
+SLURMTMPDIR=
+working directory = /home/mark/LCO/01_bulk/05_metals/Ni4/Tetra/Adsorbed/3_layers/coco
+slurmstepd: error: *** JOB 42478 ON n003 CANCELLED AT 2026-09-29T00:52:50 ***

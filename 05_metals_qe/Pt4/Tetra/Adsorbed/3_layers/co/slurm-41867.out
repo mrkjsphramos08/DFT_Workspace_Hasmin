@@ -1,0 +1,6 @@
+SLURM_JOBID=41867
+SLURM_JOB_NODELIST=n001
+SLURM_NNODES=1
+SLURMTMPDIR=
+working directory = /home/mark/LCO/01_bulk/05_metals/Pt4/Tetra/Adsorbed/3_layers/co
+slurmstepd: error: *** JOB 41867 ON n001 CANCELLED AT 2026-09-21T18:04:27 ***

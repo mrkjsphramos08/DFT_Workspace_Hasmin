@@ -23,24 +23,13 @@ storelibdebugit.txt.*
 
 
 # ---------------------------------------------------------------------------
-# Quantum ESPRESSO scratch directories (regenerable, very large)
+# Quantum ESPRESSO scratch & wavefunctions (regenerable, very large)
 # ---------------------------------------------------------------------------
 **/tmp/
 *.save/
-
-# ---------------------------------------------------------------------------
-# Raw QE / SLURM outputs (regenerable; far too large for git)
-# ---------------------------------------------------------------------------
-*.out
-*.out.*
-*.pwo
-*.bfgs
+*.wfc*
 *.mix*
 *.hub*
-*.wfc*
-*.update
-*.occup
-*.yaml
 
 # ---------------------------------------------------------------------------
 # Derived structure exports (regenerable from the CIFs)
@@ -94,10 +83,6 @@ IBZKPT*
 REPORT*
 XDATCAR*
 PROCAR*
-vasp.out
-Output.*.out
-Error.*.err
-slurm-*.out
 
 # ---------------------------------------------------------------------------
 # Git recovery backup

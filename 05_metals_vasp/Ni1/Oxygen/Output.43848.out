@@ -1,0 +1,68 @@
+ 
+:: initializing oneAPI environment ...
+   slurm_script: BASH_VERSION = 4.4.20(1)-release
+   args: Using "$@" for setvars.sh arguments: 
+:: advisor -- latest
+:: ccl -- latest
+:: clck -- latest
+:: compiler -- latest
+:: dal -- latest
+:: debugger -- latest
+:: dev-utilities -- latest
+:: dnnl -- latest
+:: dpcpp-ct -- latest
+:: dpl -- latest
+:: inspector -- latest
+:: ipp -- latest
+:: ippcp -- latest
+:: ipp -- latest
+:: itac -- latest
+:: mkl -- latest
+:: mpi -- latest
+:: tbb -- latest
+:: vpl -- latest
+:: vtune -- latest
+:: oneAPI environment initialized ::
+ 
+Job: 43848
+Nodes: n003
+MPI ranks: 40
+MPI launcher: /net/clusterhn.cluster.pssclabs.com/opt/intel/oneapi/mpi/2021.9.0//bin/mpiexec
+VASP executable: /home/Software/VASP/vasp.6.5.1/bin/vasp_std
+Start: 2026-11-03T16:58:37-08:00
+ running   40 mpi-ranks, on    1 nodes
+ distrk:  each k-point on   20 cores,    2 groups
+ distr:  one band on    4 cores,    5 groups
+ vasp.6.5.1 10Mar25 (build Aug 19 2025 18:05:27) complex                        
+  
+ POSCAR found type information on POSCAR LiCoO Ni
+ POSCAR found :  4 types and      73 ions
+ scaLAPACK will be used
+ -----------------------------------------------------------------------------
+|                                                                             |
+|               ----> ADVICE to this user running VASP <----                  |
+|                                                                             |
+|     You have a (more or less) 'large supercell' and for larger cells it     |
+|     might be more efficient to use real-space projection operators.         |
+|     Therefore, try LREAL= Auto in the INCAR file.                           |
+|     Mind: For very accurate calculation, you might also keep the            |
+|     reciprocal projection scheme (i.e. LREAL=.FALSE.).                      |
+|                                                                             |
+ -----------------------------------------------------------------------------
+
+ LDA part: xc-table for (Slater+PW92), standard interpolation
+ POSCAR, INCAR and KPOINTS ok, starting setup
+ FFT: planning ... GRIDC
+ FFT: planning ... GRID_SOFT
+ FFT: planning ... GRID
+ WAVECAR not read
+ entering main loop
+       N       E                     dE             d eps       ncg     rms          rms(c)
+DAV:   1     0.657939137993E+04    0.65794E+04   -0.30651E+05  9710   0.171E+03
+DAV:   2     0.673211195980E+03   -0.59062E+04   -0.55541E+04  9140   0.467E+02
+DAV:   3    -0.403455979767E+03   -0.10767E+04   -0.10440E+04  9870   0.197E+02
+DAV:   4    -0.487866025650E+03   -0.84410E+02   -0.83369E+02 10380   0.505E+01
+DAV:   5    -0.502471882467E+03   -0.14606E+02   -0.14507E+02 15920   0.144E+01    0.125E+02
+DAV:   6    -0.819794820936E+03   -0.31732E+03   -0.16721E+03 12520   0.121E+02    0.915E+02
+DAV:   7    -0.806556222190E+03    0.13239E+02   -0.58869E+02  9475   0.413E+01    0.931E+02
+DAV:   8    -0.810177150518E+03   -0.36209E+01   -0.32915E+01 12570   0.925E+00    0.936E+02
