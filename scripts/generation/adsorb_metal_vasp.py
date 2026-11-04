@@ -42,13 +42,13 @@ DEFAULT_PAW_DATASETS: Dict[str, str] = {
     "O": "O",
     "Ni": "Ni_pv",
     "Pt": "Pt",
-    "Cu": "Cu",
+    "Cu": "Cu_pv",
 }
 
 # Default initial magnetic moments (uB) for adsorbate metals
 DEFAULT_AD_MAGMOM: Dict[str, float] = {
     "Ni": 1.0,
-    "Pt": 1.0,
+    "Pt": 0.0,
     "Co": 1.0,
     "Cu": 0.0,
 }
@@ -196,12 +196,14 @@ def generate_poscar_content(adsorbed: Atoms, selective_dynamics: List[bool], com
 
     species: List[str] = []
     counts: List[int] = []
+    current_species = None
     for s in symbols:
-        if s in species:
-            counts[species.index(s)] += 1
-        else:
+        if s != current_species:
             species.append(s)
             counts.append(1)
+            current_species = s
+        else:
+            counts[-1] += 1
 
     lines = [
         comment,
@@ -222,15 +224,38 @@ def generate_poscar_content(adsorbed: Atoms, selective_dynamics: List[bool], com
     return "\n".join(lines) + "\n"
 
 
-def generate_incar_content(species_counts: Dict[str, int], metal: str, site_name: str,
+def generate_incar_content(species_order: List[str], species_counts: Dict[str, int],
+                           metal: str, site_name: str,
                            magmom_metal: float = 1.0) -> str:
     """Generate VASP INCAR adhering to converged slab settings with U on Co only."""
-    n_li = species_counts.get("Li", 18)
-    n_co = species_counts.get("Co", 18)
-    n_o = species_counts.get("O", 36)
-    n_m = species_counts.get(metal, 1)
+    magmom_parts: List[str] = []
+    ldaul_parts: List[str] = []
+    ldauu_parts: List[str] = []
+    ldauj_parts: List[str] = []
 
-    magmom_str = f"{n_li}*0.0 {n_co}*1.0 {n_o}*0.0 {n_m}*{magmom_metal:.1f}"
+    for sp in species_order:
+        n = species_counts[sp]
+        if sp in ("Li", "O"):
+            magmom_parts.append(f"{n}*0.0")
+            ldaul_parts.append("-1")
+            ldauu_parts.append("0")
+            ldauj_parts.append("0")
+        elif sp == "Co":
+            magmom_parts.append(f"{n}*1.0")
+            ldaul_parts.append("2")
+            ldauu_parts.append("3.2")
+            ldauj_parts.append("0")
+        else:
+            # Other metal adatoms (e.g. Ni, Pt, Cu)
+            magmom_parts.append(f"{n}*{magmom_metal:.1f}")
+            ldaul_parts.append("-1")
+            ldauu_parts.append("0")
+            ldauj_parts.append("0")
+
+    magmom_str = " ".join(magmom_parts)
+    ldaul_str = " ".join(ldaul_parts)
+    ldauu_str = " ".join(ldauu_parts)
+    ldauj_str = " ".join(ldauj_parts)
 
     incar_lines = [
         f"SYSTEM = LiCoO2_104_slab_3x2_{metal}1_{site_name}_PBE_U3.2_D3",
@@ -248,9 +273,9 @@ def generate_incar_content(species_counts: Dict[str, int], metal: str, site_name
         f"MAGMOM = {magmom_str}",
         "LDAU = .TRUE.",
         "LDAUTYPE = 2",
-        "LDAUL = -1 2 -1 -1",
-        "LDAUU = 0 3.2 0 0",
-        "LDAUJ = 0 0 0 0",
+        f"LDAUL = {ldaul_str}",
+        f"LDAUU = {ldauu_str}",
+        f"LDAUJ = {ldauj_str}",
         "LMAXMIX = 4",
         "IVDW = 11",
         "IBRION = 2",
@@ -382,22 +407,33 @@ def create_site_calculation(site_name: str, target_xy: np.ndarray, surface_z: fl
 
     # 1. Adsorbed structure
     ad_atom = Atoms(metal, positions=[[target_xy[0], target_xy[1], surface_z + height]])
-    adsorbed = slab.copy()
-    adsorbed.extend(ad_atom)
+    raw_atoms = slab.copy()
+    raw_atoms.extend(ad_atom)
+    raw_sd = list(slab_selective_dynamics) + [False]  # adatom is free (T T T)
 
-    # Selective dynamics: slab flags + False (Free) for the adatom
-    selective_dynamics = list(slab_selective_dynamics) + [False]
+    # Group atoms and selective_dynamics flags by species preserving slab species order
+    species_order: List[str] = []
+    for s in slab.get_chemical_symbols():
+        if s not in species_order:
+            species_order.append(s)
+    if metal not in species_order:
+        species_order.append(metal)
 
-    # Species counts and ordering
+    ordered_indices: List[int] = []
+    all_symbols = raw_atoms.get_chemical_symbols()
+    for spec in species_order:
+        for idx, sym in enumerate(all_symbols):
+            if sym == spec:
+                ordered_indices.append(idx)
+
+    adsorbed = raw_atoms[ordered_indices]
+    selective_dynamics = [raw_sd[i] for i in ordered_indices]
+
+    # Species counts
     species_symbols = list(adsorbed.get_chemical_symbols())
     counts: Dict[str, int] = {}
     for s in species_symbols:
         counts[s] = counts.get(s, 0) + 1
-
-    unique_species: List[str] = []
-    for s in species_symbols:
-        if s not in unique_species:
-            unique_species.append(s)
 
     # 2. POSCAR
     poscar_content = generate_poscar_content(
@@ -413,7 +449,13 @@ def create_site_calculation(site_name: str, target_xy: np.ndarray, surface_z: fl
 
     # 3. INCAR
     ad_magmom = DEFAULT_AD_MAGMOM.get(metal, 1.0)
-    incar_content = generate_incar_content(counts, metal, site_name, magmom_metal=ad_magmom)
+    incar_content = generate_incar_content(
+        species_order=species_order,
+        species_counts=counts,
+        metal=metal,
+        site_name=site_name,
+        magmom_metal=ad_magmom,
+    )
     (site_folder / "INCAR").write_text(incar_content, encoding="utf-8")
 
     # 4. KPOINTS
@@ -421,7 +463,7 @@ def create_site_calculation(site_name: str, target_xy: np.ndarray, surface_z: fl
     (site_folder / "KPOINTS").write_text(kpoints_content, encoding="utf-8")
 
     # 5. POTCAR_SPECIES and POTCAR
-    potcar_species_list = [paw_mapping.get(s, s) for s in unique_species]
+    potcar_species_list = [paw_mapping.get(s, s) for s in species_order]
     (site_folder / "POTCAR_SPECIES").write_text(" ".join(potcar_species_list) + "\n", encoding="utf-8")
 
     potcar_success = assemble_potcar(potcar_species_list, site_folder / "POTCAR", pp_path)

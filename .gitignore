@@ -68,6 +68,7 @@ storelibdebugit.txt.*
 # ---------------------------------------------------------------------------
 **/POTCAR
 POTCAR*
+!**/POTCAR_SPECIES
 OUTCAR*
 OUTCAR
 OSZIC*
