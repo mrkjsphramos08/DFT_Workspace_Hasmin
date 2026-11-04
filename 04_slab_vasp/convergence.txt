@@ -1,0 +1,58 @@
+VASP convergence summary (v1.0.0)
+Source: /home/mark/LCO/01_bulk/04_slab_vasp/OUTCAR
+Format: outcar
+Mode: relaxation or unknown
+Ionic status: Not confirmed: no structural-accuracy message found
+Ending: Normal accounting footer observed; this does not establish ionic convergence
+Completed ionic/static evaluations: 11
+Electronic cycles explicitly confirmed in OUTCAR: 10
+Force mask: 24 free, 48 fixed, 72 total from POSCAR
+Settings: EDIFF=1e-06, EDIFFG=-0.0103, NELM=500, NSW=100, IBRION=2, ISIF=2, POTIM=0.5, LDIPOL=True
+Free-atom force target: < 0.010300 eV/A
+
+FINAL IONIC ENERGIES AND FORCES (not intermediate SCF energies)
+Eval  SCF*  Final F [eV]   adjacent dF   Fmax free   Fmax raw    mag [muB]  SCF status
+   1    186    -411.395188           --    1.477964   1.477964      23.9998  reached (OUTCAR message)
+   2     31    -411.705922    -0.310734    0.851371   1.505802      24.0000  reached (OUTCAR message)
+   3     29    -411.738666    -0.032743    0.606932   1.497663      24.0000  reached (OUTCAR message)
+   4     19    -411.916024    -0.177358    0.450076   1.524564      24.0000  reached (OUTCAR message)
+   5     33    -412.033517    -0.117494    0.366258   1.582392      24.0000  reached (OUTCAR message)
+   6     29    -412.040973    -0.007456    0.252581   1.570479      24.0000  reached (OUTCAR message)
+   7     30    -412.078819    -0.037846    0.175327   1.581763      24.0000  reached (OUTCAR message)
+   8     22    -366.096946    45.981873    6.730108   6.730108      24.0000  reached (OUTCAR message)
+   9     35    -276.030369    90.066577   19.912522  19.912522      24.0000  reached (OUTCAR message)
+  10     46    -104.703527   171.326843   46.318290  46.318290      25.8512  reached (OUTCAR message)
+  11    244     194.835248   299.538775   99.818115  99.818115      23.2208  not demonstrated by energy criterion
+* SCF = iterations started; started/with-energy shown when the last one is incomplete.
+Adjacent dF is computed from consecutive final F values; it is not VASP's line-search d E column.
+
+LATEST ELECTRONIC CYCLE (at evaluation 11)
+Iterations started / with an energy: 244 / 244
+Last SCF energy: 204.010338 eV; dE=-0.001423742 eV; d eps=-0.000003511 eV
+Electronic energies can differ from final ionic F (for example, later D3 terms). Compare like with like.
+
+REVIEW FLAGS (heuristics, not convergence criteria)
+- Evaluation 8: F increased by 45.981873 eV (review threshold 1.000 eV/cell)
+- Evaluation 8: free-atom force jumped from 0.175327 to 6.730108 eV/A
+- Evaluation 8: reported force-drift norm 55.044898 eV/A exceeds review threshold 1.000
+- Evaluation 9: F increased by 90.066577 eV (review threshold 1.000 eV/cell)
+- Evaluation 9: reported force-drift norm 165.106188 eV/A exceeds review threshold 1.000
+- Evaluation 10: F increased by 171.326843 eV (review threshold 1.000 eV/cell)
+- Evaluation 10: reported force-drift norm 383.935852 eV/A exceeds review threshold 1.000
+- Evaluation 11: F increased by 299.538775 eV (review threshold 1.000 eV/cell)
+- Evaluation 11: reported force-drift norm 813.521306 eV/A exceeds review threshold 1.000
+
+WARNINGS / LINE-SEARCH MESSAGES
+- 13x WARNING: grid for Broyden might be to small
+- Species 1 mass override: INCAR=6.941, potential metadata in OUTCAR=7.01
+- Species 3 mass override: INCAR=15.999, potential metadata in OUTCAR=16
+
+NOTES AND LIMITATIONS
+- A compatible POSCAR atom order is required; matching counts alone cannot prove order provenance
+- This is log analysis, not validation of the surface model, magnetic ground state, or convergence of cutoff/k-points/vacuum
+
+Official interpretation references:
+https://vasp.at/wiki/OSZICAR
+https://vasp.at/wiki/EDIFF
+https://vasp.at/wiki/EDIFFG
+https://vasp.at/wiki/OUTCAR

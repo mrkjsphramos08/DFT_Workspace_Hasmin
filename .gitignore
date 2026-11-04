@@ -75,6 +75,41 @@ storelibdebugit.txt.*
 *.zip
 
 # ---------------------------------------------------------------------------
+# VASP scratch / outputs (regenerable; POTCARs are licensed & user-supplied)
+# ---------------------------------------------------------------------------
+**/POTCAR
+POTCAR*
+OUTCAR*
+OUTCAR
+OSZIC*
+vasprun.xml*
+vasprun.xml
+WAVECAR*
+CHGCAR*
+CHG*
+DOSCAR*
+EIGENVAL*
+PCDAT*
+IBZKPT*
+REPORT*
+XDATCAR*
+PROCAR*
+vasp.out
+Output.*.out
+Error.*.err
+slurm-*.out
+
+# ---------------------------------------------------------------------------
+# Git recovery backup
+# ---------------------------------------------------------------------------
+.git_corrupted_backup/
+
+# ---------------------------------------------------------------------------
+# Archived data bundles
+# ---------------------------------------------------------------------------
+archive/data_bundles/
+
+# ---------------------------------------------------------------------------
 # Legacy 44.1/441 generation (archived on purpose; see archive_legacy_cluster_runs.py)
 # ---------------------------------------------------------------------------
 05_metals_legacy/

@@ -1,0 +1,31 @@
+=== VASP BULK RELAXATION ANALYSIS ===
+
+--- Convergence ---
+Electronic converged: True
+Ionic converged:      True
+Overall converged:    True
+Ionic steps:          8
+
+--- Total Energy ---
+Final energy (eV):    -71.32774838
+Final energy (Ry):    -5.24249281
+
+--- Energy per Li1 Co1 O2 ---
+Formula units:        3
+Energy (eV/f.u.):     -23.77591613
+Energy (Ry/f.u.):     -1.74749760
+
+--- Optimized Structure ---
+a (Å):                2.81046177
+b (Å):                2.81046177
+c (Å):                13.97784959
+Alpha (°):            90.000000
+Beta (°):             90.000000
+Gamma (°):            120.000000
+Volume (Å³):          95.61507289
+
+--- Forces & Stress ---
+Maximum force (eV/Å): 2.10900000e-05
+Max stress (kB):      1.15833371
+
+=== ANALYSIS COMPLETE ===

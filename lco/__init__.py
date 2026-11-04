@@ -18,4 +18,10 @@ __all__ = [
     "paths",
     "qe_output",
     "qe_input",
+    "chemistry",
+    "ase_io",
+    "vasp_input",
+    "vasp_output",
+    "adsorption_config",
+    "adsorption_sites",
 ]

@@ -1,0 +1,64 @@
+# =============================================================================
+# VASP INCAR for LiCoO2 (104) 3x2 Slab Relaxation (PBE + U=3.2 eV + D3)
+# Adapted from 01_vc_relax_vasp_gpt bulk calculation.
+# Key changes for slab:
+#  - ISIF = 2 (relax ion positions only; keep cell vectors & vacuum fixed)
+#  - MAGMOM = 18*0.0 18*1.0 36*0.0 (18 Li, 18 Co with 1.0 seed, 36 O)
+#  - LDIPOL = .TRUE., IDIPOL = 3, DIPOL = 0.5 0.5 0.0935 (dipole correction along z)
+#  - KPAR = 2, NCORE = 4 (for 4 3 1 mesh with 40 MPI ranks)
+# =============================================================================
+
+SYSTEM = LiCoO2_104_slab_3x2_PBE_U3.2_D3
+
+# Electronic structure & functional
+GGA = PE
+ENCUT = 550
+PREC = Accurate
+EDIFF = 1E-6
+NELM = 500
+ALGO = Normal
+LREAL = .FALSE.
+LASPH = .TRUE.
+
+# Occupations & Smearing
+ISMEAR = 0
+SIGMA = 0.13606
+
+# Spin polarization & initial magnetic moments (18 Li, 18 Co, 36 O)
+ISPIN = 2
+MAGMOM = 18*0.0 18*1.0 36*0.0
+
+# DFT+U (Dudarev Ueff = 3.2 eV on Co 3d)
+LDAU = .TRUE.
+LDAUTYPE = 2
+LDAUL = -1 2 -1
+LDAUU = 0 3.2 0
+LDAUJ = 0 0 0
+LMAXMIX = 4
+
+# Dispersion correction (Grimme D3 zero-damping)
+IVDW = 11
+
+# Ionic Relaxation (ISIF=2 preserves vacuum & cell geometry)
+IBRION = 2
+ISIF = 2
+NSW = 100
+EDIFFG = -0.0103
+PSTRESS = 0
+
+# Dipole Correction (along surface normal z, matching QE dipfield=.true.)
+LDIPOL = .TRUE.
+IDIPOL = 3
+DIPOL = 0.5 0.5 0.0935
+
+# Parallelization (40 MPI ranks: 2 k-point groups of 20 ranks)
+# NCORE=4 allocates 4 cores per orbital (giving NPAR=5 band groups per k group),
+# eliminating the single-core FFT bottleneck flagged in the VASP OUTCAR warning.
+KPAR = 2
+NCORE = 4
+
+# Initialization & Atomic masses
+ISTART = 0
+ICHARG = 2
+POMASS = 6.941 58.933 15.999
+

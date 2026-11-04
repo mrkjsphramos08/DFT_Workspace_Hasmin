@@ -1,0 +1,92 @@
+# Converted from reference/LCO_bulk.in. All explanations use VASP comment markers.
+# Exact structure and k grid are in POSCAR and KPOINTS; see companion notes.
+# This is a starting conversion, with documented changes in numerical methods.
+
+# QE prefix='lcobulk': descriptive label only, not a VASP filename prefix.
+SYSTEM = LiCoO2_bulk_PBE_U3.2_D3
+
+# QE UPF filenames identify PBE. Requested VASP PAW library is PBE64.
+# The supplied UPF contents were not inspected; PAW datasets differ from USPP.
+GGA = PE
+# QE ecutwfc=40.4 Ry gives 549.670002169 eV; requested rounded cutoff is 550.
+# Same energy scale does not guarantee equally converged USPP and PAW results.
+ENCUT = 550
+# VASP-specific FFT precision for forces/stress; not QE ecutrho=500 Ry.
+PREC = Accurate
+# QE conv_thr is omitted. This is a VASP-specific 1e-6 eV SCF criterion,
+# not a direct conversion of QE's default estimated-error threshold.
+EDIFF = 1E-6
+# QE electron_maxstep=500: same maximum electronic iteration count.
+NELM = 500
+# QE diagonalization is omitted (Davidson default); VASP blocked Davidson.
+ALGO = Normal
+# Reciprocal-space PAW projectors for this small 12-atom cell; VASP choice.
+LREAL = .FALSE.
+# Include PAW nonspherical gradient corrections, useful for Co d states and U.
+# No one-to-one QE switch; this is a VASP PAW accuracy choice.
+LASPH = .TRUE.
+
+# QE occupations='smearing', smearing='gaussian': Gaussian occupations.
+ISMEAR = 0
+# QE degauss=0.01 Ry gives 0.13605693123 eV, rounded as requested.
+SIGMA = 0.13606
+
+# QE nspin=2: collinear spin-polarized calculation without imposed total spin.
+ISPIN = 2
+# QE starting_magnetization(2)=0.1 is a Co valence polarization fraction.
+# VASP requires moments in Bohr magnetons per atom. 1.0 per Co is a chosen
+# positive seed, not an exact conversion without the source UPF valence data.
+# Atom order: Li x3, Co x3, O x6. These seeds do not fix final moments.
+MAGMOM = 3*0.0 3*1.0 6*0.0
+
+# QE HUBBARD (ortho-atomic), U Co-3d 3.2: enable a Co d-shell correction.
+LDAU = .TRUE.
+# Dudarev Ueff=U-J is the selected VASP analogue; projectors differ from QE.
+LDAUTYPE = 2
+# Li Co O order: -1 disables correction; l=2 selects Co d states.
+LDAUL = -1 2 -1
+# Preserve the supplied 3.2 eV Co value; it is not in Ry and needs no scaling.
+LDAUU = 0 3.2 0
+# No separate J is provided by QE; choose J=0 so Ueff=3.2 eV.
+LDAUJ = 0 0 0
+# PAW mixing through l=4 retains d-shell on-site density information.
+# VASP-specific DFT+U setting; it is not QE mixing_beta or local-TF mixing.
+LMAXMIX = 4
+
+# QE vdw_corr='grimme-d3' omits damping version: zero-damping default.
+# VASP 11 selects pairwise D3(zero), not BJ. QE also defaults to three-body
+# terms; that contribution is not reproduced by this IVDW=11 setup.
+IVDW = 11
+
+# QE vc-relax with ionic/cell BFGS: choose VASP conjugate-gradient relaxation.
+# This preserves optimization intent, not the QE BFGS trajectory.
+IBRION = 2
+# Relax ions, cell shape and volume; analogue of QE vc-relax, cell_dofree all.
+ISIF = 3
+# QE omits press; retain zero external pressure explicitly (VASP units kbar).
+PSTRESS = 0
+# QE nstep=100: same maximum ionic-step count, not a convergence guarantee.
+NSW = 100
+# QE forc_conv_thr=4D-4 Ry/bohr gives 0.010284413495 eV/Angstrom.
+# Requested rounding is 0.0103. Negative selects VASP force-norm stopping.
+# QE tests force components and also energy/pressure, so stopping differs.`
+EDIFFG = -0.0103
+
+# Requested 40 MPI ranks: four k-point groups, each containing ten ranks.
+# This is a parallel layout, independent of PBE dataset selection.
+KPAR = 4
+# One rank per orbital, giving ten band-parallel ranks in each k group.
+# Conservative inherited baseline; benchmark before production. No NPAR tag.
+NCORE = 1
+
+# Fresh run: no QE wavefunctions can be imported, nor implicit VASP restart.
+ISTART = 0
+# Build initial charge from atoms; matches a fresh-start calculation intent.
+ICHARG = 2
+# QE ATOMIC_SPECIES masses in Li Co O order. These override PAW defaults.
+# Retained for traceability; no molecular dynamics is performed here.
+POMASS = 6.941 58.933 15.999
+
+# QE mixing_beta=0.2 and mixing_mode='local-TF' have no exact tag mapping.
+# Do not set AMIX=0.2 as a claimed equivalence. VASP mixing defaults apply.
+# QE ecutrho=500 Ry has no direct ENCUT/ENAUG conversion; defaults apply.

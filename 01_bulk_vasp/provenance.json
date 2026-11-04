@@ -1,0 +1,14 @@
+{
+  "source_filename": "LCO_bulk.in",
+  "source_sha256": "ffe9f090067556ee526f409fbf61f541544adb1981b4a4d87e6aac2197b21ea2",
+  "source_conversation": "6ae05754-b2b0-83ec-915d-b66875511df5",
+  "prepared_date": "2026-10-28",
+  "local_library_existence_confirmed": [
+    "/home/mjram/POTCAR/PBE64/Li_sv/POTCAR",
+    "/home/mjram/POTCAR/PBE64/Co_pv/POTCAR",
+    "/home/mjram/POTCAR/PBE64/O/POTCAR"
+  ],
+  "potcar_contents_read": false,
+  "potcar_created": false,
+  "vasp_executed": false
+}

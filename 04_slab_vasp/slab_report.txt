@@ -1,0 +1,39 @@
+LiCoO2 (104) SLAB GEOMETRY VALIDATION (PRE-RELAXATION)
+Source bulk: /home/mark/LCO/01_bulk/01_vc_relax_vasp_gpt/CONTCAR
+Miller index: (1, 0, 4)
+Requested: 3 planes; 18 A vacuum; supercell (3, 2, 1)
+Selected termination: 0 (not necessarily lowest-energy)
+Species/POTCAR order: Li Co O
+Composition: {'Li': 18, 'Co': 18, 'O': 36}; atoms: 72
+Nominal ionic charge proxy [e]: +0
+a,b,c [A]: [8.431385313245187, 11.356146129366772, 22.142088962800848]
+alpha,beta,gamma [degrees]: [90.0, 90.0, 89.99999999642863]
+Atomic thickness [A]: 4.1421
+Geometric vacuum gap [A]: 18.0000 (mode: top)
+  - Vacuum above top surface [A]: 18.0000
+  - Vacuum below bottom surface [A]: 0.0000
+Minimum pair distance [A]: 1.9250
+Atomic z groups: 3
+Frozen: 48; free: 24
+Frozen atom indices in POSCAR (1-based): [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72]
+Frozen species: {'Li': 12, 'Co': 12, 'O': 24}
+Free species: {'Li': 6, 'Co': 6, 'O': 12}
+
+Atomic z groups from bottom (not necessarily full chemical layers):
+   1: z=  0.0738 A atoms= 24 comp={'Li': 6, 'Co': 6, 'O': 12} fixed=True indices=[13, 14, 15, 16, 17, 18, 31, 32, 33, 34, 35, 36, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72]
+   2: z=  2.0710 A atoms= 24 comp={'Li': 6, 'Co': 6, 'O': 12} fixed=True indices=[7, 8, 9, 10, 11, 12, 25, 26, 27, 28, 29, 30, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+   3: z=  4.0683 A atoms= 24 comp={'Li': 6, 'Co': 6, 'O': 12} fixed=False indices=[1, 2, 3, 4, 5, 6, 19, 20, 21, 22, 23, 24, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48]
+
+Warnings and required review:
+  - '3 planes' is a nominal pymatgen Miller-plane thickness request, NOT proof of three complete LiCoO2 chemical layers.
+  - Atomic z groups use a tolerance-based geometric clustering; they are not automatically chemically complete layers.
+  - Inspect both surface terminations visually before DFT. For an asymmetric slab, evaluate dipole correction (IDIPOL=3/LDIPOL) and vacuum convergence.
+  - Fixing bottom 2 z groups is a starting constraint choice. Verify that fixed atoms are bulk-like and enough atoms remain free.
+
+Next steps:
+  1. Inspect POSCAR/CIF in VESTA; verify (104), chemistry and layer count.
+  2. Confirm fixed indices reflect physically sensible bulk-like layers.
+  3. Check stoichiometry, dipole and termination suitability.
+  4. Supply licensed PBE64 Li_sv/Co_pv/O POTCAR in that species order.
+  5. Use separate relaxation INCAR (ISIF=2), converged k-grid, and SLURM.
+  6. Converge thickness, vacuum, k-mesh and ENCUT before final adsorption energies.

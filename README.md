@@ -28,65 +28,25 @@ reproducible from the inputs kept in this repository.
 
 ```
 .
-├── 01_vc_relax/            bulk LiCoO₂ variable-cell relaxation
+├── 01_bulk_qe/             bulk LiCoO₂ variable-cell relaxation (QE) [symlink: 01_vc_relax]
+├── 01_bulk_vasp/           bulk LiCoO₂ variable-cell relaxation (VASP) [symlink: 01_vc_relax_vasp]
 ├── 02_scf/                 placeholder — fixed-cell SCF follow-up
 ├── 03_dos/                 placeholder — DOS analysis
-├── 04_slab/
-│   ├── 3_layers/           3×2 LCO slab, 3 layers  (72 atoms)
-│   ├── 4_layers/           3×2 LCO slab, 4 layers  (96 atoms)
-│   ├── LCO_slab_distance.py    in-plane layer-distance analysis
-│   └── lco_slab_distances.csv  exported distances
-├── 05_metals/              clusters + adsorbed systems
-│   └── <Metal>/            Co4 · Cu4 · Ni4 · Pt4
-│       ├── Rhom/           rhombic isomer
-│       └── Tetra/          tetrahedral isomer
-│           └── Adsorbed/
-│               ├── 3_layers/<site>/   slab-specific adsorption set
-│               └── 4_layers/<site>/
-├── 05_metals_legacy/       archived 44.1/441 generation (NOT tracked in git)
-├── Adsorbed_clusters_tetra_new.py
-├── Adsorbed_Pt_new.py
-├── Adsorbed_QE_lico.py
-├── Adsorbed_QE_Pt.py
-├── adsorption_config.py
-├── adsorption_sites.py
-├── archive_legacy_cluster_runs.py
-├── cleanup_adsorbed_folders.py
-├── migrate_adsorption_folders.py
-├── metal_clusters_specs.py
-├── prepare_cluster_rerun.py
-├── pt1_script.py
-├── regenerate_cif.py
-├── run_sh.py
-├── run_sh_clusters.py
-├── run_sh_pt.py
-├── scf_timing_check.py
-├── Surface_energy.py
-├── dft_terminal_cheatsheet.md
-├── qe_dft_reference_cheatsheet.md
-├── lco/
-└── 04_slab/
-│   ├── 3_layers/
-│   ├── 3_layers_90/
-│   ├── 3_layers_new/
-│   ├── 4_layers/
-│   ├── LCO_slab_distance.py
-│   ├── LCO_slab_relaxed_3x2.cif
-│   └── lco_slab_distances.csv
-├── 05_metals/
-│   └── <Metal>/
-│       ├── Rhom/
-│       └── Tetra/
-│           └── Adsorbed/
-│               ├── 3_layers/<site>/
-│               └── 4_layers/<site>/
-├── 05_metals_legacy/
-├── lco/
-│   ├── __init__.py
-│   ├── paths.py
-│   ├── qe_input.py
-│   └── qe_output.py
-├── tests/
+├── 04_slab_qe/             3×2 LCO slab relaxation (QE: 3-layer, 4-layer) [symlink: 04_slab]
+├── 04_slab_vasp/           3×2 LCO slab relaxation (VASP: 3-layer, 18 Å vacuum)
+├── 05_metals_qe/           clusters + adsorbed systems (QE) [symlink: 05_metals]
+├── 05_metals_vasp/         clusters + adsorbed systems (VASP)
+├── 05_metals_legacy/       archived 44.1/441 generation (git-ignored)
+├── archive/                data bundle archives (*.tar.gz, *.zip)
+├── docs/                   cheatsheets & cluster summary specs
+├── lco/                    shared Python library (paths, chemistry, qe/vasp io, adsorption)
+├── scripts/
+│   ├── generation/         adsorption & slab builders (lco_104_slab_vasp, Adsorbed_clusters, etc.)
+│   ├── submission/         slurm script generators (run_sh, run_sh_clusters, run_sh_pt)
+│   ├── analysis/           analysis & energy scripts (Surface_energy, scf_timing_check)
+│   └── maintenance/        cleanup & migration tools (cleanup_adsorbed, archive_legacy)
+├── tests/                  unit tests
+└── vasp/                   VASP input generation & job submission package
 ```
 
 Raw Quantum ESPRESSO outputs, SLURM logs and `tmp/` scratch are **not tracked** —
@@ -206,28 +166,27 @@ regenerated.
 
 ## Script reference
 
-| script | purpose |
-|---|---|
-| `adsorption_config.py` | registry of slab profiles (slab CIF + output namespace); `DEFAULT_SLAB` |
-| `adsorption_sites.py` | canonical adsorption-site names and their order |
-| `Adsorbed_clusters_tetra_new.py` | place relaxed clusters on the slab sites and write `adsorbed_*_<site>.cif` |
-| `Adsorbed_Pt_new.py` | build Pt-specific adsorbed structures (alternative generator) |
-| `Adsorbed_QE_lico.py` | build pw.x inputs for adsorbed systems from the cluster template |
-| `Adsorbed_QE_Pt.py` | build Pt-specific pw.x inputs; includes `--sites` filter |
-| `run_sh.py` | SLURM scripts for adsorbed runs (16 tasks) |
-| `run_sh_clusters.py` | SLURM scripts for bare cluster runs (8 tasks) |
-| `run_sh_pt.py` | SLURM scripts for Pt runs |
-| `prepare_cluster_rerun.py` | regenerate cluster inputs at new cutoffs from a relaxed output |
-| `pt1_script.py` | Pt1 helper script |
-| `regenerate_cif.py` | rebuild `*_latest.cif` from QE outputs |
-| `scf_timing_check.py` | per-SCF-iteration timing report |
-| `archive_legacy_cluster_runs.py` | move the superseded 44.1/441 generation into `05_metals_legacy/` |
-| `migrate_adsorption_folders.py` | move unlabelled `Adsorbed/<site>/` into the `4_layers` namespace |
-| `cleanup_adsorbed_folders.py` | archive orphaned CIFs and stale `run.sh` leftovers |
-| `Surface_energy.py` | surface energy from the slab and bulk outputs |
-| `metal_clusters_specs.py` | metal cluster specifications summary |
-| `04_slab/LCO_slab_distance.py` | in-plane layer distances → `lco_slab_distances.csv` |
-| `04_slab/LCO_slab_distance.py` | in-plane layer distances → `lco_slab_distances.csv` |
+| script | location | purpose |
+|---|---|---|
+| `lco_104_slab_vasp.py` | `scripts/generation/` | VASP (104) slab generator from relaxed bulk CONTCAR |
+| `Adsorbed_clusters_tetra_new.py` | `scripts/generation/` | place relaxed clusters on the slab sites and write `adsorbed_*_<site>.cif` |
+| `Adsorbed_Pt_new.py` | `scripts/generation/` | build Pt-specific adsorbed structures (alternative generator) |
+| `Adsorbed_QE_lico.py` | `scripts/generation/` | build pw.x inputs for adsorbed systems from the cluster template |
+| `Adsorbed_QE_Pt.py` | `scripts/generation/` | build Pt-specific pw.x inputs; includes `--sites` filter |
+| `regenerate_cif.py` | `scripts/generation/` | rebuild `*_latest.cif` from QE outputs |
+| `pt1_script.py` | `scripts/generation/` | Pt1 helper script |
+| `run_sh.py` | `scripts/submission/` | SLURM scripts for adsorbed runs (16 tasks) |
+| `run_sh_clusters.py` | `scripts/submission/` | SLURM scripts for bare cluster runs (8 tasks) |
+| `run_sh_pt.py` | `scripts/submission/` | SLURM scripts for Pt runs |
+| `Surface_energy.py` | `scripts/analysis/` | surface energy from the slab and bulk outputs |
+| `scf_timing_check.py` | `scripts/analysis/` | per-SCF-iteration timing report |
+| `metal_clusters_specs.py` | `scripts/analysis/` | metal cluster specifications summary |
+| `archive_legacy_cluster_runs.py` | `scripts/maintenance/` | move the superseded 44.1/441 generation into `05_metals_legacy/` |
+| `cleanup_adsorbed_folders.py` | `scripts/maintenance/` | archive orphaned CIFs and stale `run.sh` leftovers |
+| `migrate_adsorption_folders.py` | `scripts/maintenance/` | move unlabelled `Adsorbed/<site>/` into the `4_layers` namespace |
+| `prepare_cluster_rerun.py` | `scripts/maintenance/` | regenerate cluster inputs at new cutoffs from a relaxed output |
+| `adsorption_config.py` | `lco/` (with root shim) | registry of slab profiles (slab CIF + output namespace); `DEFAULT_SLAB` |
+| `adsorption_sites.py` | `lco/` (with root shim) | canonical adsorption-site names and their order |
 
 Common flags: `--slab {3_layers,4_layers}`, `--apply` (the housekeeping scripts are
 dry-run by default), `--cluster` / `--shape` on `prepare_cluster_rerun.py`.
@@ -365,6 +324,73 @@ Two companion references live in the repository root:
 - **`dft_terminal_cheatsheet.md`** — one-line ASE/SLURM/disk commands
 - **`qe_dft_reference_cheatsheet.md`** — how to build a `pw.x` input by hand, with
   Hubbard U, vdW and spin-polarisation notes
+
+## Multi-engine mirrors (VASP)
+
+The repository ships **parallel VASP mirrors** of the QE campaign so the same
+systems can be run in both engines and compared on identical geometries.
+
+| mirror | engine | convention |
+|---|---|---|
+| `01_vc_relax_vasp/` | VASP | bulk LiCoO₂ vc-relax, PBE+U(Co)=3.2 eV + D3 |
+| `05_metals_vasp/` | VASP | clusters + adsorbed systems, Γ-point / MP meshes |
+
+**Conventions:**
+
+- VASP uses the **same relaxed structures** (CIFs) as the QE side; the source
+  CIF is copied into the VASP tree for provenance.
+- VASP input decks are generated by the library (`lco.vasp_input.*`), so they are
+  reproducible and drift-free.
+- PAW datasets (`POTCAR`) are **not** committed — they are licensed and
+  user-supplied. `vasp/setup_potcar.py` assembles them from
+  `$VASP_PP_PATH` using the `POTCAR_SPECIES` file.
+- SLURM scripts are generated by `vasp/run_sh.py` (mirrors the QE `run_sh.py`).
+- All VASP scratch/outputs (`POTCAR*`, `OUTCAR*`, `OSZIC*`, `vasprun.xml`,
+  `WAVECAR`, `CHGCAR`, `XDATCAR`, `vasp.out`, `tmp/`) are git-ignored.
+
+### QE ↔ VASP parameter mapping
+
+| QE (`pw.x`) | VASP |
+|---|---|
+| `calculation='vc-relax'` | `IBRION=1, ISIF=3, NSW=100` |
+| `calculation='relax'` | `IBRION=2, ISIF=2, NSW=200` |
+| `nspin=2` | `ISPIN=2` |
+| `starting_magnetization(2)=0.1` (Co) | `MAGMOM` (Co=0.10, rest 0) |
+| `ecutwfc=40.4 Ry`/`ecutrho=500 Ry` | `ENCUT=520` eV (PBE PAW) |
+| `smearing='gaussian', degauss=0.01 Ry` | `ISMEAR=0, SIGMA=0.136` eV |
+| `vdw_corr='grimme-d3'` | `IVDW=11` (DFT-D3 zero-damping) |
+| `K_POINTS 12 12 4 0 0 0` | MP `12 12 4`, shift `0 0 0` |
+| `K_POINTS 1 1 1 0 0 0` | Γ-point `1 1 1 0 0 0` |
+| `HUBBARD (ortho-atomic) U Co-3d 3.2` | `LDAU=.TRUE., LDAUTYPE=2`, `LDAUL=-1 2 -1`, `LDAUU=0.0 3.2 0.0`, `LDAUJ=0.0 0.0 0.0` |
+| `forc_conv_thr=4D-4` | `EDIFFG=-0.01` eV/Å |
+
+> **Note on the Hubbard U convention.** QE uses an *ortho-atomic* U; VASP
+> Dudarev uses `U_eff = U − J`. Here `LDAUJ=0`, so `U_eff = LDAUU = 3.2 eV`,
+> the closest mechanical analogue. Validate the VASP energy/geometry against the
+> QE reference — they are not guaranteed identical.
+
+### Generating the full VASP campaign
+
+```bash
+# from the repository root
+python -m vasp.generate_inputs --all                 # every system
+python -m vasp.generate_inputs --metal Pt4           # one metal family
+python -m vasp.generate_inputs --clusters            # bare clusters only
+python -m vasp.generate_inputs --slab 3_layers --site li,co,lico,center,oxygen,lili,coco,lio,coo
+```
+
+Each generated directory receives `INCAR`, `KPOINTS`, `POSCAR`, the source `CIF`
+and `POTCAR_SPECIES`.
+
+### Running
+
+```bash
+cd 05_metals_vasp/Co4/Tetra
+python ../../../vasp/setup_potcar.py --pp-path /my/pbe/potcar --subdir PBE
+sbatch run_vasp.sh
+```
+
+See `05_metals_vasp/README.md` for the full guide.
 
 ## License
 
