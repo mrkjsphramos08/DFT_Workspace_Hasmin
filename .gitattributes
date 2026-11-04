@@ -1,0 +1,16 @@
+# Auto detect text files and enforce LF line endings across all platforms
+* text=auto eol=lf
+
+# Explicit LF for shell scripts and Python
+*.sh text eol=lf
+*.py text eol=lf
+
+# DFT inputs and outputs
+*.in text eol=lf
+*.out text eol=lf
+*.err text eol=lf
+*.cif text eol=lf
+POSCAR text eol=lf
+INCAR text eol=lf
+KPOINTS text eol=lf
+CONTCAR text eol=lf
