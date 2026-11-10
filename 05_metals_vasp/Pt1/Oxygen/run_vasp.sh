@@ -2,6 +2,7 @@
 # Submit from the calculation folder with: sbatch run_vasp.sh
 #SBATCH --job-name=Pt1_oxygen
 #SBATCH --partition=high
+#SBATCH --nodelist=n003
 #SBATCH --nodes=1
 #SBATCH --ntasks=40
 #SBATCH --cpus-per-task=1
@@ -59,4 +60,5 @@ printf 'Start: %s\n' "$(date -Is)"
 status=0
 mpiexec -np "$SLURM_NTASKS" "$vasp_exe" || status=$?
 printf 'VASP exit code: %s\nFinished: %s\n' "$status" "$(date -Is)"
+python3 /home/mark/LCO/01_bulk/notify.py "$SLURM_JOB_NAME" "$SLURM_JOB_ID" "$status" "${SLURM_NODELIST:-unknown}" || true
 exit "$status"

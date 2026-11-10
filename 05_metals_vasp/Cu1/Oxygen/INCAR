@@ -4,13 +4,20 @@ ENCUT = 550
 PREC = Accurate
 EDIFF = 1E-6
 NELM = 500
-ALGO = Normal
-LREAL = .FALSE.
+ALGO = All
+LREAL = Auto
 LASPH = .TRUE.
 ISMEAR = 0
 SIGMA = 0.13606
 ISPIN = 2
 MAGMOM = 18*0.0 18*1.0 36*0.0 1*0.0
+
+# Mixer parameters to stop charge/spin sloshing
+AMIX = 0.2
+BMIX = 0.0001
+AMIX_MAG = 0.8
+BMIX_MAG = 0.0001
+
 LDAU = .TRUE.
 LDAUTYPE = 2
 LDAUL = -1 2 -1 -1
@@ -26,7 +33,7 @@ PSTRESS = 0
 LDIPOL = .TRUE.
 IDIPOL = 3
 DIPOL = 0.5 0.5 0.0935
-KPAR = 2
+KPAR = 1
 NCORE = 4
 ISTART = 0
 ICHARG = 2
