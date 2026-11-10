@@ -2,7 +2,7 @@
 # Submit from the calculation folder with: sbatch run_vasp.sh
 #SBATCH --job-name=Pt1_oxygen
 #SBATCH --partition=high
-#SBATCH --nodelist=n003
+#SBATCH --exclude=n001
 #SBATCH --nodes=1
 #SBATCH --ntasks=40
 #SBATCH --cpus-per-task=1
